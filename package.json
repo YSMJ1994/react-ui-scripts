@@ -1,0 +1,19 @@
+{
+  "name": "react-ui-scripts",
+  "version": "0.0.1",
+  "description": "react-ui scripts",
+  "bin": {
+    "react-ui-scripts": "index.js"
+  },
+  "author": "soberz <710411486@qq.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/YSMJ1994/react-ui-scripts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YSMJ1994/react-ui-scripts"
+  },
+  "keywords": [
+    "create-react-ui",
+    "react-ui-scripts"
+  ]
+}
