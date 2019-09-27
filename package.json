@@ -3,8 +3,10 @@
   "version": "0.0.1",
   "description": "react-ui scripts",
   "bin": {
-    "react-ui-scripts": "index.js"
+    "react-ui-scripts": "bin/index.js"
   },
+  "main": "lib/index.js",
+  "module": "src/index.js",
   "author": "soberz <710411486@qq.com>",
   "license": "MIT",
   "homepage": "https://github.com/YSMJ1994/react-ui-scripts",
@@ -15,5 +17,68 @@
   "keywords": [
     "create-react-ui",
     "react-ui-scripts"
-  ]
+  ],
+  "dependencies": {
+    "@babel/core": "7.6.0",
+    "@svgr/webpack": "4.3.2",
+    "babel-eslint": "10.0.3",
+    "babel-loader": "8.0.6",
+    "babel-plugin-named-asset-import": "^0.3.4",
+    "babel-preset-react-app": "^9.0.2",
+    "camelcase": "^5.2.0",
+    "case-sensitive-paths-webpack-plugin": "2.2.0",
+    "chalk": "^2.4.2",
+    "chokidar": "^3.1.1",
+    "classnames": "^2.2.6",
+    "css-loader": "2.1.1",
+    "dotenv": "6.2.0",
+    "dotenv-expand": "5.1.0",
+    "eslint": "^6.1.0",
+    "eslint-loader": "3.0.0",
+    "file-loader": "3.0.1",
+    "fs-extra": "^8.1.0",
+    "highlight.js": "^9.15.10",
+    "html-webpack-plugin": "4.0.0-beta.5",
+    "identity-obj-proxy": "3.0.0",
+    "is-wsl": "^1.1.0",
+    "markdown-it": "^10.0.0",
+    "mini-css-extract-plugin": "0.8.0",
+    "node-sass": "^4.12.0",
+    "optimize-css-assets-webpack-plugin": "5.0.3",
+    "pnp-webpack-plugin": "1.5.0",
+    "postcss-flexbugs-fixes": "4.1.0",
+    "postcss-loader": "3.0.0",
+    "postcss-normalize": "7.0.1",
+    "postcss-preset-env": "6.7.0",
+    "postcss-safe-parser": "4.0.1",
+    "react": "^16.9.0",
+    "react-app-polyfill": "^1.0.3",
+    "react-dev-utils": "^9.0.4",
+    "react-dom": "^16.9.0",
+    "react-router-dom": "^5.1.0",
+    "resolve": "1.12.0",
+    "resolve-url-loader": "3.1.0",
+    "sass-loader": "7.2.0",
+    "style-loader": "1.0.0",
+    "terser-webpack-plugin": "1.4.1",
+    "url-loader": "2.1.0",
+    "webpack": "^4.41.0",
+    "webpack-dev-server": "3.2.1",
+    "webpack-manifest-plugin": "2.0.4"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
