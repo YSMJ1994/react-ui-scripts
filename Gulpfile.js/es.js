@@ -79,7 +79,7 @@ function resolveScss() {
 function resolveOther() {
   return src([
     `${root}/**/*`,
-    `!${root}/**/*.${suffix}`,
+    ...jsSuffixArr.map(suffix => `!${root}/**/*.${suffix}`),
     `!${root}/*/demo/*.md`,
     `!${root}/*/index.md`
   ]).pipe(dest(destPath));

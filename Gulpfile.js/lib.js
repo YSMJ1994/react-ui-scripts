@@ -22,7 +22,7 @@ const {
 
 sass.compiler = NodeSass;
 const isTs = cruConfig.typescript;
-const jsSuffixArr = isTs ? ['tsx', 'ts'] : ['jsx', 'js']
+const jsSuffixArr = isTs ? ["tsx", "ts"] : ["jsx", "js"];
 const output = "lib";
 const nodeDestPath = path.resolve(libraryBuild, output);
 const destPath = path2GulpPath(nodeDestPath + "/");
@@ -76,7 +76,7 @@ function resolveScss() {
 function resolveOther() {
   return src([
     `${root}/**/*`,
-    `!${root}/**/*.${suffix}`,
+    ...jsSuffixArr.map(suffix => `!${root}/**/*.${suffix}`),
     `!${root}/**/*.scss`,
     `!${root}/**/*.sass`,
     `!${root}/*/demo/*.md`,
