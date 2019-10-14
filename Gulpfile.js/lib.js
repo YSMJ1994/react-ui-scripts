@@ -1,6 +1,7 @@
 "use strict";
 const path = require("path");
 const paths = require("../config/paths");
+const cruConfig = require("../config/config");
 const { libraryBuild, componentRoot, toolRoot } = paths;
 const { src, dest, series, parallel } = require("gulp");
 const through2 = require("through2");
@@ -20,8 +21,7 @@ const {
 } = require("../utils/fs");
 
 sass.compiler = NodeSass;
-const suffix = process.env.SUFFIX;
-const isTs = process.env.TYPESCRIPT === 'true';
+const isTs = cruConfig.typescript;
 const jsSuffixArr = isTs ? ['tsx', 'ts'] : ['jsx', 'js']
 const output = "lib";
 const nodeDestPath = path.resolve(libraryBuild, output);

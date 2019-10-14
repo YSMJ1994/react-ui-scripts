@@ -1,6 +1,7 @@
 "use strict";
 const path = require("path");
 const paths = require("../config/paths");
+const cruConfig = require("../config/config");
 const { libraryBuild, componentRoot, toolRoot } = paths;
 const { src, dest, series, parallel } = require("gulp");
 const through2 = require("through2");
@@ -9,22 +10,21 @@ const { path2GulpPath } = require("../utils");
 const NodeSass = require("node-sass");
 const sass = require("gulp-sass");
 const {
-    copyDir,
-    copyFile,
-    emptyDir,
-    readDir,
-    exists,
-    removeFile,
-    writeFile,
-    getFilename
+  copyDir,
+  copyFile,
+  emptyDir,
+  readDir,
+  exists,
+  removeFile,
+  writeFile,
+  getFilename
 } = require("../utils/fs");
 
 sass.compiler = NodeSass;
-const suffix = process.env.SUFFIX;
-const isTs = process.env.TYPESCRIPT === 'true';
-console.log('isTs', isTs)
-const jsSuffixArr = isTs ? ['tsx', 'ts'] : ['jsx', 'js']
-const output = 'es';
+const isTs = cruConfig.typescript;
+console.log("isTs", isTs);
+const jsSuffixArr = isTs ? ["tsx", "ts"] : ["jsx", "js"];
+const output = "es";
 const nodeDestPath = path.resolve(libraryBuild, output);
 const destPath = path2GulpPath(nodeDestPath + "/");
 const root = path2GulpPath(componentRoot);
@@ -43,7 +43,7 @@ async function clean() {
   await emptyDir(nodeDestPath);
 }
 
-console.log('jsSuffixArr', jsSuffixArr);
+console.log("jsSuffixArr", jsSuffixArr);
 
 /**
  * 编译组件文件
