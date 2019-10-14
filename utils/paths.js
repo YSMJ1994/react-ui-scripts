@@ -2,21 +2,28 @@ const path = require("path");
 
 const targetRoot = process.cwd();
 const toolRoot = path.resolve(__dirname, "../");
-// console.log("targetRoot", targetRoot);
-// console.log("toolRoot", toolRoot);
 
-const docRoot = path.resolve(targetRoot, 'doc');
-const componentRoot = path.resolve(targetRoot, 'components');
-const publicRoot = path.resolve(targetRoot, 'public');
-const assetsComponentRoot = path.resolve(toolRoot, 'assets/components');
-const assetsDocRoot = path.resolve(toolRoot, 'assets/docs');
+const resolveTarget = relativePath => path.resolve(targetRoot, relativePath);
+const resolveTool = relativePath => path.resolve(toolRoot, relativePath);
+
+const docRoot = resolveTarget("doc");
+const componentRoot = resolveTarget("components");
+const publicRoot = resolveTarget("public");
+const assetsComponentRoot = resolveTool("assets/components");
+const assetsDocRoot = resolveTool("assets/docs");
+const toolSrc = resolveTool("src");
+const targetPkgName = require(resolveTarget('package.json')).name
 
 module.exports = {
-	targetRoot,
-	toolRoot,
-	docRoot,
-	componentRoot,
-	publicRoot,
-	assetsComponentRoot,
-	assetsDocRoot
-}
+  targetRoot,
+  toolRoot,
+  docRoot,
+  componentRoot,
+  publicRoot,
+  assetsComponentRoot,
+  assetsDocRoot,
+  toolSrc,
+    targetPkgName,
+  resolveTarget,
+  resolveTool
+};

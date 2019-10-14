@@ -1,0 +1,164 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  //-webkit-font-smoothing: antialiased;
+  //-moz-osx-font-smoothing: grayscale;
+  font-variant: tabular-nums;
+  line-height: 1.5;
+  background-color: #fff;
+  font-feature-settings: "tnum";
+}
+
+*,
+:after,
+:before {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+.App {
+  display: flex;
+  width: 100vw;
+}
+
+.AppNav {
+  flex: none;
+  width: 21%;
+  max-width: 320px;
+  min-width: 260px;
+  overflow: auto;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.AppMain {
+  flex: auto;
+  position: relative;
+  min-height: 500px;
+  padding: 0 170px 144px 64px;
+  overflow: hidden;
+  background: #fff;
+
+  article {
+    color: #314659;
+    font-size: 14px;
+    line-height: 2;
+
+    h1 {
+      margin-top: 8px;
+      margin-bottom: 20px;
+      color: #0d1a26;
+      font-weight: 500;
+      font-size: 30px;
+      font-family: Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue",
+        Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol", sans-serif;
+      line-height: 38px;
+    }
+
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      clear: both;
+      margin: 1.6em 0 0.6em;
+      color: #0d1a26;
+      font-weight: 500;
+      font-family: Avenir, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue",
+        Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol", sans-serif;
+    }
+    h2 {
+      font-size: 24px;
+      line-height: 32px;
+
+      a {
+        opacity: 0;
+        transition: all 0.2s;
+      }
+      &:hover {
+        a {
+          opacity: 1;
+        }
+      }
+    }
+    h3 {
+      font-size: 18px;
+    }
+    h4 {
+      font-size: 16px;
+    }
+    h5 {
+      font-size: 14px;
+    }
+    h6 {
+      font-size: 12px;
+    }
+    hr {
+      clear: both;
+      height: 1px;
+      margin: 56px 0;
+      background: #ebedf0;
+      border: 0;
+    }
+    p {
+      margin: 1em 0;
+      padding: 0;
+    }
+  }
+  .toc-ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    border-left: 1px solid #ebedf0;
+
+    li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      a {
+        display: inline-block;
+        width: 100%;
+        line-height: 1.8;
+        padding-left: 1.5em;
+        color: #314659;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border-left: 1px solid transparent;
+        margin-left: -1px;
+
+        &:hover {
+          color: #1890ff;
+        }
+        &.toc-li-a--active {
+          color: #1890ff;
+          border-left-color: #1890ff;
+        }
+      }
+    }
+  }
+}
+a {
+  text-decoration: none;
+  color: #1890ff;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #40a9ff;
+  }
+}

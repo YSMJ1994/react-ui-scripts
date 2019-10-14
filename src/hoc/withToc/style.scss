@@ -1,0 +1,12 @@
+.toc-wrap {
+    position: absolute;
+    right: 0;
+    top: 100px;
+    width: 160px;
+
+    &.toc-wrap--fixed {
+        position: fixed;
+        transform: unset;
+        top: 50px;
+    }
+}

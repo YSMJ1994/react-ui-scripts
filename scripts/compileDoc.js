@@ -1,7 +1,9 @@
 const chokidar = require("chokidar");
 const chalk = require("chalk");
 const paths = require("../utils/paths");
+const cruConfig = require('../config/config')
 const path = require("path");
+const channel = require("./channel");
 const { executeDelay } = require("../utils");
 const {
   readDir,
@@ -12,29 +14,29 @@ const {
   removeFile,
   getFilename
 } = require("../utils/fs");
+const getMDT = require("./MDT");
 const HighLight = require("highlight.js");
-const config = {
-  html: true,
-  linkify: false,
-  typographer: true,
+const mdtConfig = {
   highlight: function(str, lang) {
     if (lang && HighLight.getLanguage(lang)) {
       try {
-        return HighLight.highlight(lang, str).value;
+        let highLightHtmlStr = HighLight.highlight(lang, str).value;
+        highLightHtmlStr = highLightHtmlStr.replace(/class="/g, '__cls="');
+        return `<pre><code class="language-${lang}" dangerouslySetInnerHTML={{__html: \`${highLightHtmlStr}\`}}></code></pre>`;
       } catch (__) {}
     }
     return "";
   }
 };
-const MDT = require("markdown-it")(config);
 
 const { docRoot, assetsDocRoot } = paths;
+let docsCompileArr = [];
 
 const docs = {};
-const suffix = "jsx";
+const suffix = cruConfig.typescript ? 'tsx' : 'jsx';
 
-const mdHeaderConfigRegExp = /^---(?!dependencies)((?:.|\n|\r|\u2028|\u2029)*?)---$/im;
-const mdHeaderDependenciesRegExp = /^---dependencies((?:.|\n|\r|\u2028|\u2029)+)---$/im;
+const mdHeaderConfigRegExp = /^---(?!dependencies)([\s\S]*?)---$/im;
+const mdHeaderDependenciesRegExp = /^---dependencies([\s\S]+)---$/im;
 const configMapRegExp = /(order|name)[:：]\s*([^\s\n]*)/gi;
 
 function getConfig(configStr, filename, index = 0) {
@@ -62,6 +64,13 @@ function getConfig(configStr, filename, index = 0) {
     }
     return config;
   }
+}
+
+function resolveHTMLToJSX(html) {
+  return String(html)
+    .replace(/class="/g, 'className="')
+    .replace(/style="([^"]*)"/g, "style={}")
+    .replace(/__cls/g, "class");
 }
 
 async function parseOne(mdPath, index) {
@@ -92,27 +101,56 @@ async function parseOne(mdPath, index) {
   let cleanContent = content
     .replace(mdHeaderConfigRegExp, "")
     .replace(mdHeaderDependenciesRegExp, "");
-  md.html = MDT.render(cleanContent);
+  let titleList = [];
+  const MDT = getMDT(mdtConfig, {
+    slugify: s => {
+      titleList.push(s);
+      return s;
+    }
+  });
+  md.titleList = titleList;
+  md.html = resolveHTMLToJSX(MDT.render(cleanContent));
   md.content = content;
   // console.log("md", md);
+  const filenameWithoutExt = getFilename(md.filename, ".md");
+  const compFilename = `${filenameWithoutExt}.${suffix}`;
   const writeJsPath = path.resolve(assetsDocRoot, `${md.name}.${suffix}`);
+  const writeCompPath = path.resolve(assetsDocRoot, compFilename);
   md.writePath = writeJsPath;
-  const writeContent = `import React from 'react';\n${
-    md.dependencies
-  }\nexport default {component: () => (<article>${
-    md.html
-  }</article>), config: ${JSON.stringify(md)}}`;
-  await writeFile(writeJsPath, writeContent);
+  const writeContent = `import React from 'react';
+import asyncComponent from 'toolSrc/components/asyncComponent';
+import withActiveAnchor from 'toolSrc/hoc/withActiveAnchor';
+
+const Comp = asyncComponent(() => import(/* webpackChunkName: "doc-${filenameWithoutExt}" */'./${filenameWithoutExt}'), withActiveAnchor);
+export default {component: () => <Comp/>, config: ${JSON.stringify(md)}}`;
+  const writeCompContent = `import React from 'react';
+${md.dependencies}
+
+export default () => (<article>${md.html}</article>)`;
+  // await writeFile(writeCompPath, writeCompContent);
+  // await writeFile(writeJsPath, writeContent);
+  md.write = async () => {
+    await writeFile(writeCompPath, writeCompContent);
+    await writeFile(writeJsPath, writeContent);
+  };
   docs[id] = md;
-  console.log(`parsing doc: [ ${chalk.greenBright(filename)} ] success!`);
+  console.log(`parse doc: [ ${chalk.greenBright(filename)} ] success!`);
+  docsCompileArr.push(filename);
 }
 
 async function generateIndex() {
+  console.log("exec generateIndex");
   const indexPath = path.resolve(assetsDocRoot, "index.js");
 
   const importArr = [];
   const exportArr = [];
-  Object.keys(docs).forEach(key => {
+  const keys = Object.keys(docs);
+  // 写入变化
+  for (let i = 0, len = keys.length; i < len; i++) {
+    const md = docs[keys[i]];
+    await md.write();
+  }
+  keys.forEach(key => {
     const md = docs[key];
     const { name } = md;
     const filename = `${name}.${suffix}`;
@@ -125,50 +163,65 @@ async function generateIndex() {
     "\n"
   )}\n\nexport default [${exportArr.join(", ")}].sort((a, b) => {
   if (a.config.order === b.config.order) {
-    return a.config.name >= b.config.name ? -1 : 1;
+    return a.config.name >= b.config.name ? 1 : -1;
   } else {
     return a.config.order - b.config.order;
   }
 });`;
   await writeFile(indexPath, indexContent);
+  console.log();
+  channel.emit(docsCompileArr);
+  docsCompileArr = [];
+}
+
+async function build() {
+  const children = await readDir(docRoot, true);
+  for (let i = 0, len = children.length; i < len; i++) {
+    const childPath = children[i];
+    if (/\.md$/.test(childPath) && isFile(childPath)) {
+      // 若是文件夹并且该文件夹下存在index及index.md，则当作组件解析
+      await parseOne(childPath);
+    }
+  }
+  await generateIndex();
 }
 
 async function start() {
-  const watcher = chokidar.watch(docRoot, {});
-  return new Promise(resolve => {
-    watcher.on("all", (action, filePath, stat) => {
-      // 过滤出md文件
-      if (!/\.md$/.test(filePath)) {
-        return;
+  await build();
+  const watcher = chokidar.watch(docRoot, {
+    ignoreInitial: true
+  });
+  watcher.on("all", (action, filePath, stat) => {
+    // 过滤出md文件
+    if (!/\.md$/.test(filePath)) {
+      return;
+    }
+    // console.log("action", action, "filepath", filePath);
+    switch (action) {
+      case "add": {
+        parseOne(filePath);
+        break;
       }
-      console.log("action", action, "filepath", filePath);
-      switch (action) {
-        case "add": {
-          parseOne(filePath);
-          break;
+      case "unlink": {
+        const id = filePath;
+        if (docs[id]) {
+          const { writePath } = docs[id];
+          Reflect.deleteProperty(docs, id);
+          removeFile(writePath);
         }
-        case "unlink": {
-          const id = filePath;
-          if (docs[id]) {
-            const { writePath } = docs[id];
-            Reflect.deleteProperty(docs, id);
-            removeFile(writePath);
-          }
-          break;
-        }
-        case "change": {
-          parseOne(filePath, 0, true);
-          break;
-        }
+        break;
       }
-      // 500毫秒后生成index
-      executeDelay(function() {
-        generateIndex().then(resolve);
-      }, 500);
-    });
+      case "change": {
+        parseOne(filePath, 0, true);
+        break;
+      }
+    }
+    // 500毫秒后生成index
+    executeDelay(generateIndex, 500);
   });
 }
 
 module.exports = {
-  start
+  start,
+  build
 };

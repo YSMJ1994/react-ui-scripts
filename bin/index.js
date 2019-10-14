@@ -17,6 +17,14 @@ switch (command) {
     require("../scripts/build")();
     break;
   }
+  case "build-doc": {
+    require("../scripts/build")('doc');
+    break;
+  }
+  case "build-library": {
+    require("../scripts/build")('library');
+    break;
+  }
   case "test": {
     // todo
     break;

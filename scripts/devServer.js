@@ -10,10 +10,10 @@ const clearConsole = require('react-dev-utils/clearConsole');
 const checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 const {
 	choosePort,
-	createCompiler,
 	prepareProxy,
 	prepareUrls,
 } = require('react-dev-utils/WebpackDevServerUtils');
+const createCompiler = require('./CreateCompiler')
 const openBrowser = require('react-dev-utils/openBrowser');
 const paths = require('../config/paths');
 const configFactory = require('../config/webpack.config');
@@ -100,7 +100,7 @@ function start() {
 					return console.log(err);
 				}
 				if (isInteractive) {
-					clearConsole();
+					// clearConsole();
 				}
 
 				// We used to support resolving modules according to `NODE_PATH`.

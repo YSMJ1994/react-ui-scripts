@@ -1,28 +1,29 @@
 "use strict";
 
-const path = require("path");
 const fs = require("fs");
+const {
+  targetRoot,
+  toolRoot,
+  docRoot,
+  componentRoot,
+  publicRoot,
+  assetsComponentRoot,
+  assetsDocRoot,
+  toolSrc,
+  resolveTarget,
+  resolveTool
+} = require("../utils/paths");
 
-const targetRoot = process.cwd();
-const toolRoot = path.resolve(__dirname, "../");
-
-const resolveTarget = relativePath => path.resolve(targetRoot, relativePath);
-const resolveTool = relativePath => path.resolve(toolRoot, relativePath);
-const docRoot = resolveTarget("doc");
-const componentRoot = resolveTarget("components");
-const publicRoot = resolveTarget("public");
-const assetsComponentRoot = resolveTool("assets/components");
-const assetsDocRoot = resolveTool("assets/docs");
-const toolSrc = resolveTool("src");
-console.log("componentRoot", componentRoot);
 const moduleFileExtensions = [
   "web.mjs",
   "mjs",
   "web.js",
   "js",
+  "ts",
   "json",
   "web.jsx",
-  "jsx"
+  "jsx",
+  "tsx"
 ];
 
 // Resolve file paths in the same order as webpack
@@ -43,7 +44,10 @@ module.exports = {
   targetPkg: resolveTarget("package.json"),
   dotenv: resolveTarget(".env"),
   appPath: resolveTool("."),
-  appBuild: resolveTarget("build"),
+  appBuild: resolveTarget("build-doc"),
+  configPath: resolveTarget("cru.config.js"),
+  libraryBuild: resolveTarget("build-library"),
+  libraryStatic: resolveTarget("libraryStatic"),
   appPublic: resolveTarget("public"),
   appHtml: resolveTarget("public/index.html"),
   appIndexJs: resolveModule(resolveTool, "src/index"),
@@ -53,8 +57,9 @@ module.exports = {
   proxySetup: resolveTarget("setupProxy.js"),
   appNodeModules: resolveTarget("node_modules"),
   appModules: [targetRoot, toolRoot],
-  publicUrl: ".",
-  servedPath: "./",
+  publicUrl: process.env.CRU_PUBLIC_URL || ".",
+  servedPath: process.env.CRU_PUBLIC_URL || "./",
+  toolComponentIndex: resolveTool("assets/components/comps.js"),
   targetRoot,
   toolRoot,
   docRoot,
@@ -62,7 +67,9 @@ module.exports = {
   publicRoot,
   assetsComponentRoot,
   assetsDocRoot,
-  toolSrc
+  toolSrc,
+  resolveTarget,
+  resolveTool
 };
 
 module.exports.moduleFileExtensions = moduleFileExtensions;

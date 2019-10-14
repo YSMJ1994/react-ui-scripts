@@ -35,18 +35,20 @@ const imageInlineSizeLimit = parseInt(
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 const sassRegex = /\.(scss|sass)$/;
+const lessRegex = /\.less$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+const lessModuleRegex = /\.module\.less$/;
 
 module.exports = function(webpackEnv) {
   const isEnvDevelopment = webpackEnv === "development";
   const isEnvProduction = webpackEnv === "production";
 
   const publicPath = isEnvProduction
-    ? paths.servedPath
+    ? /\/$/.test(paths.servedPath) ?  paths.servedPath : `${paths.servedPath}/`
     : isEnvDevelopment && "/";
   const shouldUseRelativeAssetPaths = publicPath === "./";
   const publicUrl = isEnvProduction
-    ? publicPath.slice(0, -1)
+    ? /\/$/.test(publicPath) ? publicPath.slice(0, -1) : publicPath
     : isEnvDevelopment && "";
   const env = getClientEnvironment(publicUrl);
 
@@ -116,7 +118,7 @@ module.exports = function(webpackEnv) {
       pathinfo: isEnvDevelopment,
       filename: isEnvProduction
         ? "static/js/[name].[contenthash:8].js"
-        : isEnvDevelopment && "static/js/bundle.js",
+        : isEnvDevelopment && "static/js/[name].bundle.js",
       futureEmitAssets: true,
       chunkFilename: isEnvProduction
         ? "static/js/[name].[contenthash:8].chunk.js"
@@ -186,7 +188,7 @@ module.exports = function(webpackEnv) {
       ],
       splitChunks: {
         chunks: "all",
-        name: false
+        name: true
       },
       runtimeChunk: {
         name: entrypoint => `runtime-${entrypoint.name}`
@@ -215,6 +217,8 @@ module.exports = function(webpackEnv) {
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
         "react-native": "react-native-web",
         components: paths.componentRoot,
+        [`${targetPkg.name}$`]: paths.toolComponentIndex,
+        [targetPkg.name]: paths.componentRoot,
         public: paths.publicRoot,
         toolSrc: paths.toolSrc
       },
@@ -276,7 +280,7 @@ module.exports = function(webpackEnv) {
             // Process application JS with Babel.
             // The preset includes JSX, Flow, TypeScript, and some ESnext features.
             {
-              test: /\.(js|mjs|jsx)$/,
+              test: /\.(js|mjs|jsx|ts|tsx)$/,
               include: [
                 paths.appSrc,
                 paths.componentRoot,
@@ -403,6 +407,36 @@ module.exports = function(webpackEnv) {
                 "sass-loader"
               )
             },
+              {
+                  test: lessRegex,
+                  exclude: lessModuleRegex,
+                  use: getStyleLoaders(
+                      {
+                          importLoaders: 2,
+                          sourceMap: isEnvProduction && shouldUseSourceMap
+                      },
+                      "less-loader"
+                  ),
+                  // Don't consider CSS imports dead code even if the
+                  // containing package claims to have no side effects.
+                  // Remove this when webpack adds a warning or an error for this.
+                  // See https://github.com/webpack/webpack/issues/6571
+                  sideEffects: true
+              },
+              // Adds support for CSS Modules, but using SASS
+              // using the extension .module.scss or .module.sass
+              {
+                  test: lessModuleRegex,
+                  use: getStyleLoaders(
+                      {
+                          importLoaders: 2,
+                          sourceMap: isEnvProduction && shouldUseSourceMap,
+                          modules: true,
+                          getLocalIdent: getCSSModuleLocalIdent
+                      },
+                      "less-loader"
+                  )
+              },
             // "file" loader makes sure those assets get served by WebpackDevServer.
             // When you `import` an asset, you get its (virtual) filename.
             // In production, they would get copied to the `build` folder.

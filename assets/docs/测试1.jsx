@@ -1,0 +1,6 @@
+import React from 'react';
+import asyncComponent from 'toolSrc/components/asyncComponent';
+import withActiveAnchor from 'toolSrc/hoc/withActiveAnchor';
+
+const Comp = asyncComponent(() => import(/* webpackChunkName: "doc-test" */'./test'), withActiveAnchor);
+export default {component: () => <Comp/>, config: {"id":"/Users/soberz/workspace/my-git-repo/react-ui-temp-js/doc/test.md","filename":"test.md","name":"测试1","order":1,"dependencies":"\nimport Button from 'components/Button';\nimport 'components/Button/style/index.scss';\n","titleList":["test comp"],"html":"<h1>测试</h1>\n<p>这是一份测试文档。\n这是一份测试文档。</p>\n<h2 id=\"test-comp\">test comp <a className=\"header-anchor\" href=\"#test-comp\" aria-hidden=\"true\">#</a></h2>\n<p><Button>test comp</Button></p>\n","content":"---\norder: 1\nname: 测试1\n---\n---dependencies\nimport Button from 'components/Button';\nimport 'components/Button/style/index.scss';\n---\n\n# 测试\n\n这是一份测试文档。\n这是一份测试文档。\n\n## test comp\n\n<Button>test comp</Button>\n","writePath":"/Users/soberz/workspace/my-git-repo/react-ui-scripts/assets/docs/测试1.jsx"}}

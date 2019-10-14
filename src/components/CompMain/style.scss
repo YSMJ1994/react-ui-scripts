@@ -1,0 +1,21 @@
+.comp-main {
+    position: relative;
+    table {
+        width: 100%;
+        border: 1px solid #ebedf0;
+        border-collapse: collapse;
+        font-size: 13px;
+        thead {
+            background-color: rgba(0,0,0,0.02);
+        }
+        tr {
+            border-bottom: 1px solid #ebedf0;
+            border-collapse: collapse;
+        }
+        td, th {
+            padding: 12px;
+            text-align: left;
+            border-collapse: collapse;
+        }
+    }
+}
