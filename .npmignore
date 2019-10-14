@@ -1,3 +1,6 @@
 .prettierrc.js
 yarn.lock
+.idea
+.vscode
+.DS_Store
 /assets
