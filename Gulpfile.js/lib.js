@@ -47,7 +47,7 @@ async function clean() {
  * 编译组件文件
  */
 function resolveEs() {
-  return src(jsSuffixArr.map(suffix => `${root}/**/*.${suffix}`))
+  return src([...jsSuffixArr.map(suffix => `${root}/**/*.${suffix}`), `!${root}/**/*.d.ts`])
     .pipe(
       plugin(async function(file) {
         const content = file.isBuffer()
