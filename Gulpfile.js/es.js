@@ -2,13 +2,16 @@
 const path = require("path");
 const paths = require("../config/paths");
 const cruConfig = require("../config/config");
-const { libraryBuild, componentRoot, toolRoot } = paths;
+const { libraryBuild, componentRoot, toolRoot, targetRoot } = paths;
 const { src, dest, series, parallel } = require("gulp");
 const through2 = require("through2");
 const { transform2es } = require("../utils/babel");
 const { path2GulpPath } = require("../utils");
 const NodeSass = require("node-sass");
 const sass = require("gulp-sass");
+const ts = require("gulp-typescript");
+const isTs = cruConfig.typescript;
+const tsProject = ts.createProject("tsconfig.json");
 const {
   copyDir,
   copyFile,
@@ -21,9 +24,8 @@ const {
 } = require("../utils/fs");
 
 sass.compiler = NodeSass;
-const isTs = cruConfig.typescript;
 console.log("isTs", isTs);
-const suffix = isTs ? 'tsx': 'jsx';
+const suffix = isTs ? "tsx" : "jsx";
 const jsSuffixArr = isTs ? ["tsx", "ts"] : ["jsx", "js"];
 const output = "es";
 const nodeDestPath = path.resolve(libraryBuild, output);
@@ -50,7 +52,10 @@ console.log("jsSuffixArr", jsSuffixArr);
  * 编译组件文件
  */
 function resolveEs() {
-  return src([...jsSuffixArr.map(suffix => `${root}/**/*.${suffix}`), `!${root}/**/*.d.ts`])
+  return src([
+    ...jsSuffixArr.map(suffix => `${root}/**/*.${suffix}`),
+    `!${root}/**/*.d.ts`
+  ])
     .pipe(
       plugin(async function(file) {
         const content = file.isBuffer()
@@ -63,6 +68,15 @@ function resolveEs() {
       })
     )
     .pipe(dest(destPath));
+}
+
+function resolveDTS() {
+  return src([
+    ...jsSuffixArr.map(suffix => `${root}/**/*.${suffix}`),
+    `!${root}/**/*.d.ts`
+  ])
+    .pipe(tsProject()).dts
+    .pipe(dest(path2GulpPath(path.resolve(libraryBuild, "dts"))));
 }
 
 /**
@@ -161,6 +175,7 @@ async function generateIndex() {
 module.exports = series(
   clean,
   parallel(resolveEs, resolveScss, resolveOther),
+  resolveDTS,
   resolveComps,
   generateImportCss,
   cleanExtra,
