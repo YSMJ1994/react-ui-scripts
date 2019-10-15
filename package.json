@@ -20,6 +20,9 @@
   ],
   "dependencies": {
     "@babel/core": "7.6.0",
+    "@babel/preset-env": "7.6.0",
+    "@babel/preset-react": "7.0.0",
+    "@babel/preset-typescript": "^7.6.0",
     "@svgr/webpack": "4.3.2",
     "@types/classnames": "^2.2.9",
     "babel-eslint": "10.0.3",
