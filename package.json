@@ -71,6 +71,7 @@
     "sass-loader": "7.2.0",
     "style-loader": "1.0.0",
     "terser-webpack-plugin": "1.4.1",
+    "typescript": "^3.6.4",
     "url-loader": "2.1.0",
     "uslug": "^1.0.4",
     "webpack": "^4.41.0",
