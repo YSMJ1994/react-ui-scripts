@@ -1,5 +1,6 @@
 const core = require("@babel/core");
-const enabledTypescript = process.env.SUFFIX === "tsx";
+const cruConfig = require("../config/config");
+const enabledTypescript = cruConfig.typescript;
 function transform2es(code) {
   return core.transform(code, {
     presets: [

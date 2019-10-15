@@ -2,11 +2,12 @@
 
 const path = require("path");
 const paths = require("../config/paths");
+const cruConfig = require("../config/config");
 const { libraryBuild, targetPkg, libraryStatic } = paths;
 const { writeJSON, exists, copyDir } = require("../utils/fs");
 const { src, dest, series, parallel } = require("gulp");
 const targetPkgJson = require(targetPkg);
-const isTs = process.env.TYPESCRIPT === "true";
+const isTs = cruConfig.typescript;
 
 async function generatePkg() {
   const json = JSON.parse(JSON.stringify(targetPkgJson));
