@@ -5,12 +5,18 @@ function transform2es(code) {
   return core.transform(code, {
     presets: [
       [
-        require.resolve("@babel/preset-react"),
+        "@babel/preset-react",
         {
           development: false
         }
       ],
-      enabledTypescript && [require.resolve("@babel/preset-typescript")]
+      enabledTypescript && [
+        "@babel/preset-typescript",
+        {
+          isTSX: true,
+          allExtensions: true
+        }
+      ]
     ].filter(Boolean),
     configFile: false,
     babelrc: false
@@ -21,18 +27,24 @@ function transform2lib(code) {
   return core.transform(code, {
     presets: [
       [
-        require.resolve("@babel/preset-env"),
+        "@babel/preset-env",
         {
           modules: "cjs"
         }
       ],
       [
-        require.resolve("@babel/preset-react"),
+        "@babel/preset-react",
         {
           development: false
         }
       ],
-      enabledTypescript && [require.resolve("@babel/preset-typescript")]
+      enabledTypescript && [
+        "@babel/preset-typescript",
+        {
+          isTSX: true,
+          allExtensions: true
+        }
+      ]
     ].filter(Boolean),
     configFile: false,
     babelrc: false
