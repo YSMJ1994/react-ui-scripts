@@ -23,6 +23,7 @@ const {
 sass.compiler = NodeSass;
 const isTs = cruConfig.typescript;
 console.log("isTs", isTs);
+const suffix = isTs ? 'tsx': 'jsx';
 const jsSuffixArr = isTs ? ["tsx", "ts"] : ["jsx", "js"];
 const output = "es";
 const nodeDestPath = path.resolve(libraryBuild, output);

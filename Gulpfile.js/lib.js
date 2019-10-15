@@ -22,6 +22,7 @@ const {
 
 sass.compiler = NodeSass;
 const isTs = cruConfig.typescript;
+const suffix = isTs ? 'tsx': 'jsx';
 const jsSuffixArr = isTs ? ["tsx", "ts"] : ["jsx", "js"];
 const output = "lib";
 const nodeDestPath = path.resolve(libraryBuild, output);
