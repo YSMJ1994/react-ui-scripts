@@ -1,6 +1,6 @@
 {
   "name": "react-ui-scripts",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "react-ui scripts",
   "bin": {
     "react-ui-scripts": "bin/index.js"
