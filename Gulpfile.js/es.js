@@ -11,7 +11,12 @@ const NodeSass = require("node-sass");
 const sass = require("gulp-sass");
 const ts = require("gulp-typescript");
 const isTs = cruConfig.typescript;
-const tsProject = ts.createProject("tsconfig.json");
+const tsProject = ts.createProject("tsconfig.json", {
+    declaration: true,
+    noEmit: false,
+    isolatedModules: false,
+    allowJs: false
+});
 const {
   copyDir,
   copyFile,
@@ -75,8 +80,8 @@ function resolveDTS() {
     ...jsSuffixArr.map(suffix => `${root}/**/*.${suffix}`),
     `!${root}/**/*.d.ts`
   ])
-    .pipe(tsProject()).dts
-    .pipe(dest(path2GulpPath(path.resolve(libraryBuild, "dts"))));
+    .pipe(tsProject())
+    .dts.pipe(dest(path2GulpPath(path.resolve(libraryBuild, "dts"))));
 }
 
 /**
@@ -162,14 +167,14 @@ async function generateImportCss() {
  */
 async function generateIndex() {
   const compIndexJs = path.resolve(nodeDestPath, "index.js");
-  await writeFile(
-    compIndexJs,
-    comps
-      .map(({ name, dir }) => {
-        return `export { default as ${name} } from './${dir}';`;
-      })
-      .join("\n")
-  );
+  // const compIndexDTS = path.resolve(nodeDestPath, "index.d.ts");
+  const content = comps
+    .map(({ name, dir }) => {
+      return `export { default as ${name} } from './${dir}';`;
+    })
+    .join("\n");
+  await writeFile(compIndexJs, content);
+  // await writeFile(compIndexDTS, content);
 }
 
 module.exports = series(
