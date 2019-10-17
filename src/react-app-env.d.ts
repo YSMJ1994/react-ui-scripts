@@ -2,7 +2,7 @@
 /// <reference types="react" />
 /// <reference types="react-dom" />
 
-import React, { FC, PropsWithChildren } from "react";
+import React, { ComponentClass, FC, PropsWithChildren } from "react";
 
 declare namespace NodeJS {
   interface ProcessEnv {
@@ -124,4 +124,6 @@ declare global {
     };
     component: FC;
   }
+  type ReactComponent<Props> = FC<Props> | ComponentClass<Props>;
+  type RC<P extends {}> = ReactComponent<P>;
 }
