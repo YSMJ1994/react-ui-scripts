@@ -15,6 +15,7 @@
     "url": "git+https://github.com/YSMJ1994/react-ui-scripts"
   },
   "keywords": [
+    "cru",
     "create-react-ui",
     "react-ui-scripts"
   ],
@@ -42,6 +43,7 @@
     "file-loader": "3.0.1",
     "fs-extra": "^8.1.0",
     "gulp": "^4.0.2",
+    "gulp-less": "^4.0.1",
     "gulp-sass": "^4.0.2",
     "gulp-typescript": "^5.0.1",
     "highlight.js": "^9.15.10",
