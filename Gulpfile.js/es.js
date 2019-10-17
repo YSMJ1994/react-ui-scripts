@@ -178,12 +178,15 @@ async function generateIndex() {
   await writeFile(compIndexTyping, content);
 }
 
-module.exports = series(
-  clean,
-  parallel(resolveEs, resolveScss, resolveOther),
-  resolveComps,
-  generateImportCss,
-  cleanExtra,
-  resolveTypings,
-  generateIndex
+module.exports = series.apply(
+  null,
+  [
+    clean,
+    parallel(resolveEs, resolveScss, resolveOther),
+    resolveComps,
+    cruConfig.enableBabelImport && generateImportCss,
+    cleanExtra,
+    resolveTypings,
+    generateIndex
+  ].filter(Boolean)
 );
