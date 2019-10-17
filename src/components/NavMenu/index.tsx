@@ -43,7 +43,7 @@ const NavMenuItem: FC<PropsWithChildren<NavMenuItemProps>> = ({
         {href ? (
           <Link to={href}>{name}</Link>
         ) : (
-          <a href="javascript:">{name}</a>
+          <a>{name}</a>
         )}
         {isMenuHead && (
           <Icon
