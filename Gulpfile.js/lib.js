@@ -4,11 +4,11 @@ const paths = require("../config/paths");
 const cruConfig = require("../config/config");
 const { libraryBuild, componentRoot, toolRoot } = paths;
 const { src, dest, series, parallel } = require("gulp");
-const through2 = require("through2");
+const plugin = require("./utils/plugin");
 const { transform2lib } = require("../utils/babel");
 const { path2GulpPath } = require("../utils");
-const NodeSass = require("node-sass");
-const sass = require("gulp-sass");
+const sassResolver = require("./resolver/sass");
+const lessResolver = require("./resolver/less");
 const {
   copyDir,
   copyFile,
@@ -20,24 +20,16 @@ const {
   getFilename
 } = require("../utils/fs");
 
-sass.compiler = NodeSass;
-const isTs = cruConfig.typescript;
-const suffix = isTs ? 'tsx': 'jsx';
+const { typescript: isTs, cssPreprocessor: cssSuffix } = cruConfig;
+const suffix = isTs ? "tsx" : "jsx";
 const jsSuffixArr = isTs ? ["tsx", "ts"] : ["jsx", "js"];
 const output = "lib";
 const nodeDestPath = path.resolve(libraryBuild, output);
 const destPath = path2GulpPath(nodeDestPath + "/");
 const root = path2GulpPath(componentRoot);
 
-const scssJsContent = `import "../../style/index.scss";\nimport "./index.scss";\n`;
+const scssJsContent = `import "../../style/index.${cssSuffix}";\nimport "./index.${cssSuffix}";\n`;
 const cssJsContent = `import "../../style/index.css";\nimport "./index.css";\n`;
-
-function plugin(resolver) {
-  return through2.obj(async function(file, _, cb) {
-    const f = await resolver(file);
-    cb(null, f || file);
-  });
-}
 
 async function clean() {
   await emptyDir(nodeDestPath);
@@ -47,7 +39,10 @@ async function clean() {
  * 编译组件文件
  */
 function resolveEs() {
-  return src([...jsSuffixArr.map(suffix => `${root}/**/*.${suffix}`), `!${root}/**/*.d.ts`])
+  return src([
+    ...jsSuffixArr.map(suffix => `${root}/**/*.${suffix}`),
+    `!${root}/**/*.d.ts`
+  ])
     .pipe(
       plugin(async function(file) {
         const content = file.isBuffer()
@@ -63,13 +58,17 @@ function resolveEs() {
 }
 
 /**
- * 编译预处理样式文件
+ * 编译预处理样式文件scss sass
  */
-function resolveScss() {
-  return src([`${root}/**/*.scss`, `${root}/**/*.sass`])
-    .pipe(sass().on("error", sass.logError))
-    .pipe(dest(destPath));
-}
+const resolveScss = sassResolver(
+  [`${root}/**/*.scss`, `${root}/**/*.sass`],
+  dest(destPath)
+);
+
+/**
+ * 编译预处理样式文件less
+ */
+const resolveLess = lessResolver(`${root}/**/*.less`, dest(destPath));
 
 /**
  * 复制其余的文件
@@ -78,8 +77,6 @@ function resolveOther() {
   return src([
     `${root}/**/*`,
     ...jsSuffixArr.map(suffix => `!${root}/**/*.${suffix}`),
-    `!${root}/**/*.scss`,
-    `!${root}/**/*.sass`,
     `!${root}/*/demo/*.md`,
     `!${root}/*/index.md`
   ]).pipe(dest(destPath));
@@ -133,7 +130,10 @@ async function cleanExtra() {
 async function generateImportCss() {
   for (let i = 0, len = comps.length; i < len; i++) {
     const { dir } = comps[i];
-    const styleScss = path.resolve(nodeDestPath, `${dir}/style/index.scss`);
+    const styleScss = path.resolve(
+      nodeDestPath,
+      `${dir}/style/index.${cssSuffix}`
+    );
     const styleCss = path.resolve(nodeDestPath, `${dir}/style/index.css`);
     const scssJs = path.resolve(nodeDestPath, `${dir}/style/index.js`);
     const cssJs = path.resolve(nodeDestPath, `${dir}/style/css.js`);
@@ -164,11 +164,14 @@ async function generateIndex() {
   );
 }
 
-module.exports = series(
-  clean,
-  parallel(resolveEs, resolveScss, resolveOther),
-  resolveComps,
-  // generateImportCss,
-  cleanExtra,
-  generateIndex
+module.exports = series.apply(
+  null,
+  [
+    clean,
+    parallel(resolveEs, resolveScss, resolveLess, resolveOther),
+    resolveComps,
+    cruConfig.enableBabelImport && generateImportCss,
+    cleanExtra,
+    generateIndex
+  ].filter(Boolean)
 );
