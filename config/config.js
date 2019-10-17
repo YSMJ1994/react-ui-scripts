@@ -9,11 +9,23 @@ const baseConfig = Object.keys(userConfig).reduce(
     pre,
   {}
 );
+if (/^less$/.test(baseConfig.cssPreprocessor)) {
+  baseConfig.cssPreprocessor = "less";
+} else {
+  baseConfig.cssPreprocessor = "scss";
+}
+
+if (/^yarn$/.test(baseConfig.pkg)) {
+    baseConfig.pkg = "yarn";
+} else {
+    baseConfig.pkg = "npm";
+}
 
 const config = {
   cssPreprocessor: "scss",
   typescript: false,
   pkg: "yarn",
+  enableBabelImport: true,
   output: {
     doc: "build-doc",
     library: "build-library",
