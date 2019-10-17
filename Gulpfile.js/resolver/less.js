@@ -1,14 +1,13 @@
 "use strict";
 
-const NodeSass = require("node-sass");
-const sass = require("gulp-sass");
+const less = require("gulp-less");
 const gulp = require("gulp");
-sass.compiler = NodeSass;
 
-module.exports = function (src, dest) {
-    return function () {
-        return gulp.src(src)
-            .pipe(sass().on("error", sass.logError))
-            .pipe(dest);
-    }
-}
+module.exports = function(src, dest) {
+  return function resolveLess() {
+    return gulp
+      .src(src)
+      .pipe(less())
+      .pipe(dest);
+  };
+};
