@@ -139,7 +139,6 @@ export default () => (<article>${md.html}</article>)`;
 }
 
 async function generateIndex() {
-  console.log("exec generateIndex");
   const indexPath = path.resolve(assetsDocRoot, "index.js");
 
   const importArr = [];

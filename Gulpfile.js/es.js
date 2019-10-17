@@ -28,7 +28,6 @@ const {
   getFilename
 } = require("../utils/fs");
 
-console.log("isTs", isTs);
 const suffix = isTs ? "tsx" : "jsx";
 const jsSuffixArr = isTs ? ["tsx", "ts"] : ["jsx", "js"];
 const output = "es";
@@ -43,8 +42,6 @@ const cssJsContent = `import "../../style/index.css";\nimport "./index.css";\n`;
 async function clean() {
   await emptyDir(nodeDestPath);
 }
-
-console.log("jsSuffixArr", jsSuffixArr);
 
 /**
  * 编译组件文件

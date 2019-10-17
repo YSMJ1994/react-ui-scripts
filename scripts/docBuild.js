@@ -102,6 +102,22 @@ function copyPublicFolder() {
     });
 }
 
+function printBaseMessage(buildFolder, hostingLocation) {
+    console.log(
+        `The project was built assuming it is hosted at ${chalk.green(
+            hostingLocation || 'the server root'
+        )}.`
+    );
+    console.log(
+        `You can control this with the ${chalk.green(
+            'homepage'
+        )} field in your ${chalk.cyan('package.json')}.`
+    );
+
+    console.log();
+    console.log(`The ${chalk.cyan(buildFolder)} folder is ready to be deployed.`);
+}
+
 module.exports = {
     start() {
         return checkBrowsers(paths.appPath, isInteractive)
@@ -143,15 +159,14 @@ module.exports = {
                         WARN_AFTER_CHUNK_GZIP_SIZE
                     );
                     console.log();
-                    const appPackage = require(paths.targetPkg);
-                    const publicUrl = paths.publicUrl;
                     const publicPath = config.output.publicPath;
                     const buildFolder = path.relative(process.cwd(), paths.appBuild);
-                    printHostingInstructions(appPackage, publicUrl, publicPath, buildFolder, useYarn);
+                    printBaseMessage(buildFolder, publicPath)
                 },
                 err => {
+                    console.error(err);
                     console.log(chalk.red('Failed to compile.\n'));
-                    printBuildError(err);
+                    // printBuildError(err);
                     process.exit(1);
                 }
             )

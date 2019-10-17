@@ -342,7 +342,7 @@ async function parseOne(compBase) {
   };
   components[compBase] = comp;
   console.log(
-    `parsing component: [ ${chalk.greenBright(config.name)} ] success!`
+    `parse component: [ ${chalk.greenBright(config.name)} ] success!`
   );
   componentsCompileArr.push(config.name);
 }
