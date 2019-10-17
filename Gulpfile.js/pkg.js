@@ -17,6 +17,7 @@ async function generatePkg() {
   json.main = "lib/index.js";
   json["module"] = "es/index.js";
   json.license = "MIT";
+  json.typings = "typings/index.d.ts";
 
   isTs &&
     exists(path.resolve(libraryBuild, "es/index.d.ts")) &&
