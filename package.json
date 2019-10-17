@@ -17,7 +17,11 @@
   "keywords": [
     "cru",
     "create-react-ui",
-    "react-ui-scripts"
+    "react-ui-scripts",
+    "react",
+    "component",
+    "ui",
+    "library"
   ],
   "dependencies": {
     "@babel/core": "7.6.0",
