@@ -36,7 +36,7 @@ const suffix = cruConfig.typescript ? "tsx" : "jsx";
 const configRegExp = /^---([\s\S]*?)---$/im;
 const demoReplaceRegExp = /^<!--\s*demo\s*-->$/im;
 const demoConfigRegExp = /^---$/im;
-const demoCodeRegExp = /^```js.*\n([\s\S]*?)```$/im;
+const demoCodeRegExp = /^```.*jsx.*\n([\s\S]*?)```$/im;
 const demoCssCodeRegExp = /^```(css|sass|scss|less).*\n([\s\S]*?)```$/im;
 
 const defaultDemoCode = "export default () => null;";
@@ -279,7 +279,14 @@ async function parseOne(compBase) {
   }
   const parseContent = content.replace(configRegExp, "");
   let parseHtml = resolveHTMLToJSX(MDT.render(parseContent));
-  parseHtml = parseHtml.replace(demoReplaceRegExp, "<DemoWrap list={demos}/>");
+  if (parseHtml.match(demoReplaceRegExp)) {
+    parseHtml = parseHtml.replace(
+      demoReplaceRegExp,
+      "<DemoWrap list={demos}/>"
+    );
+  } else {
+    parseHtml += "\n<DemoWrap list={demos}/>";
+  }
   comp.indexInfo.html = parseHtml;
   const demoBase = path.resolve(compBase, "demo");
   if (exists(demoBase)) {
