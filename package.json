@@ -26,6 +26,10 @@
     "@babel/preset-typescript": "^7.6.0",
     "@svgr/webpack": "4.3.2",
     "@types/classnames": "^2.2.9",
+    "@types/node": "^12.7.12",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/react-router-dom": "^5.1.0",
     "babel-eslint": "10.0.3",
     "babel-loader": "8.0.6",
     "babel-plugin-named-asset-import": "^0.3.4",
@@ -95,11 +99,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/node": "^12.7.12",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/react-router-dom": "^5.1.0"
   }
 }
