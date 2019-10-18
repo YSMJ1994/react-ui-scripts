@@ -48,6 +48,8 @@ process.env.NODE_PATH = (process.env.NODE_PATH || "")
   .map(folder => path.resolve(appDirectory, folder))
   .join(path.delimiter);
 
+process.env.CRU_PUBLIC_URL = process.env.CRU_PUBLIC_URL || ''
+
 // Grab NODE_ENV and REACT_APP_* environment variables and prepare them to be
 // injected into the application via DefinePlugin in Webpack configuration.
 const REACT_APP = /^CRU_/i;

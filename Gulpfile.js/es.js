@@ -66,7 +66,7 @@ function resolveEs() {
 }
 
 function resolveTypings() {
-  return src([...jsSuffixArr.map(suffix => `${root}/**/*.${suffix}`)])
+  return src([...["tsx", "ts"].map(suffix => `${root}/**/*.${suffix}`)])
     .pipe(tsProject())
     .dts.pipe(dest(typingPath));
 }
@@ -85,9 +85,7 @@ const resolveScss = sassResolver(
 const resolveLess = lessResolver(`${root}/**/*.less`, dest(destPath));
 
 function resolveDTS() {
-    return src([
-        `${root}/**/*.d.ts`
-    ]).pipe(dest(typingPath));
+  return src([`${root}/**/*.d.ts`]).pipe(dest(typingPath));
 }
 
 /**
@@ -150,7 +148,10 @@ async function cleanExtra() {
 async function generateImportCss() {
   for (let i = 0, len = comps.length; i < len; i++) {
     const { dir } = comps[i];
-    const styleScss = path.resolve(nodeDestPath, `${dir}/style/index.${cssSuffix}`);
+    const styleScss = path.resolve(
+      nodeDestPath,
+      `${dir}/style/index.${cssSuffix}`
+    );
     const styleCss = path.resolve(nodeDestPath, `${dir}/style/index.css`);
     const scssJs = path.resolve(nodeDestPath, `${dir}/style/index.js`);
     const cssJs = path.resolve(nodeDestPath, `${dir}/style/css.js`);
