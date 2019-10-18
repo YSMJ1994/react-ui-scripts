@@ -87,7 +87,7 @@ const resolveLess = lessResolver(`${root}/**/*.less`, dest(destPath));
 function resolveDTS() {
     return src([
         `${root}/**/*.d.ts`
-    ]).pipe(dest(destPath));
+    ]).pipe(dest(typingPath));
 }
 
 /**
