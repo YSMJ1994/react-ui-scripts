@@ -14,6 +14,8 @@ const {
   resolveTool
 } = require("../utils/paths");
 
+const {output, static: staticObj, src} = require('./config')
+
 const moduleFileExtensions = [
   "web.mjs",
   "mjs",
@@ -44,12 +46,11 @@ module.exports = {
   targetPkg: resolveTarget("package.json"),
   dotenv: resolveTarget(".env"),
   appPath: resolveTool("."),
-  appBuild: resolveTarget("build-doc"),
-  configPath: resolveTarget("cru.config.js"),
-  libraryBuild: resolveTarget("build-library"),
-  libraryStatic: resolveTarget("libraryStatic"),
-  appPublic: resolveTarget("public"),
-  appHtml: resolveTarget("public/index.html"),
+  appBuild: resolveTarget(output.doc),
+  libraryBuild: resolveTarget(output.library),
+  libraryStatic: resolveTarget(staticObj.library),
+  appPublic: resolveTarget(staticObj.doc),
+  appHtml: resolveTarget(`${staticObj.doc}/index.html`),
   appIndexJs: resolveModule(resolveTool, "src/index"),
   appSrc: resolveTool("src"),
   appJsConfig: resolveTool("jsconfig.json"),

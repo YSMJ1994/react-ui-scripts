@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const command = process.argv[2];
-console.log("command", command);
 
 if (!command) {
   console.error("require command start,build,test!");

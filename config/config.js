@@ -1,6 +1,7 @@
-const { configPath } = require("./paths");
 const { exists } = require("../utils/fs");
+const path = require("path");
 
+const configPath = path.resolve(process.cwd(), "cru.config.js");
 const userConfig = exists(configPath) ? require(configPath) : {};
 const baseConfig = Object.keys(userConfig).reduce(
   (pre, key) =>
@@ -16,9 +17,9 @@ if (/^less$/.test(baseConfig.cssPreprocessor)) {
 }
 
 if (/^yarn$/.test(baseConfig.pkg)) {
-    baseConfig.pkg = "yarn";
+  baseConfig.pkg = "yarn";
 } else {
-    baseConfig.pkg = "npm";
+  baseConfig.pkg = "npm";
 }
 
 const config = {

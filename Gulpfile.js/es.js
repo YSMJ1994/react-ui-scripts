@@ -84,6 +84,12 @@ const resolveScss = sassResolver(
  */
 const resolveLess = lessResolver(`${root}/**/*.less`, dest(destPath));
 
+function resolveDTS() {
+    return src([
+        `${root}/**/*.d.ts`
+    ]).pipe(dest(destPath));
+}
+
 /**
  * 复制其余的文件
  */
@@ -172,7 +178,7 @@ module.exports = series.apply(
   null,
   [
     clean,
-    parallel(resolveEs, resolveScss, resolveLess, resolveOther),
+    parallel(resolveEs, resolveScss, resolveLess, resolveDTS, resolveOther),
     resolveComps,
     cruConfig.enableBabelImport && generateImportCss,
     cleanExtra,
