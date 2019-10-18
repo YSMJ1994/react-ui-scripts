@@ -172,7 +172,7 @@ async function generateIndex() {
     })
     .join("\n");
   await writeFile(compIndexJs, content);
-  await writeFile(compIndexTyping, content);
+  isTs && await writeFile(compIndexTyping, content);
 }
 
 module.exports = series.apply(
