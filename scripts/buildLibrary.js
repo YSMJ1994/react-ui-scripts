@@ -26,8 +26,9 @@ module.exports = async function() {
       stdio: "ignore"
     });
     gulp.on("close", function () {
+        console.log();
         console.log(`generate library [ ${chalk.greenBright(name)} ] success!`)
-        console.log(`The ${chalk.cyanBright(path.relative(targetRoot, libraryBuild))} folder is ready to publish.`)
+        console.log(`The ${chalk.cyan(path.relative(targetRoot, libraryBuild))} folder is ready to publish.`)
         resolve()
     });
   });
