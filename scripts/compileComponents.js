@@ -32,7 +32,7 @@ function hasImportReact(code) {
   if (!code) {
     return false;
   }
-  return /import\s+.+\s+from\s+['"]react['"];?/.test(code);
+  return !!String(code).match(/import\s+.+\s+from\s+['"]react['"];?/);
 }
 
 const { componentRoot, assetsComponentRoot, targetPkgName } = paths;
