@@ -11,6 +11,7 @@ const {
   isFile,
   readFile,
   writeFile,
+  emptyDir,
   removeFile,
   getFilename
 } = require("../utils/fs");
@@ -66,6 +67,13 @@ function getConfig(configStr, filename, index = 0) {
   }
 }
 
+function hasImportReact(code) {
+    if (!code) {
+        return false;
+    }
+    return /import\s+.+\s+from\s+['"]react['"];?/.test(code);
+}
+
 function resolveHTMLToJSX(html) {
   return String(html)
     .replace(/class="/g, 'className="')
@@ -116,7 +124,7 @@ async function parseOne(mdPath, index) {
   const compFilename = `${filenameWithoutExt}.${suffix}`;
   const jsFilename = `${filenameWithoutExt}-data.${suffix}`;
   md.jsFilename = jsFilename;
-  md.compFilename = compFilename
+  md.compFilename = compFilename;
   const writeJsPath = path.resolve(assetsDocRoot, jsFilename);
   const writeCompPath = path.resolve(assetsDocRoot, compFilename);
   md.writePath = writeJsPath;
@@ -126,7 +134,7 @@ import withActiveAnchor from 'toolSrc/hoc/withActiveAnchor';
 
 const Comp = asyncComponent(() => import(/* webpackChunkName: "doc-${filenameWithoutExt}" */'./${compFilename}'), withActiveAnchor);
 export default {component: () => <Comp/>, config: ${JSON.stringify(md)}}`;
-  const writeCompContent = `import React from 'react';
+  const writeCompContent = `${hasImportReact(md.dependencies) ? '' : `import React from 'react';`}
 ${md.dependencies}
 
 export default () => (<article>${md.html}</article>)`;
@@ -157,9 +165,7 @@ async function generateIndex() {
     const { jsFilename } = md;
     const index = importArr.length;
     const importName = `comp_${index}`;
-    importArr.push(
-      `import ${importName} from './${jsFilename}';`
-    );
+    importArr.push(`import ${importName} from './${jsFilename}';`);
     exportArr.push(importName);
   });
   const indexContent = `${importArr.join(
@@ -178,6 +184,9 @@ async function generateIndex() {
 }
 
 async function build() {
+  // clean
+  await emptyDir(assetsDocRoot);
+  // parse
   const children = await readDir(docRoot, true);
   for (let i = 0, len = children.length; i < len; i++) {
     const childPath = children[i];

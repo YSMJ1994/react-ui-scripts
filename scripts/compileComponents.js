@@ -28,6 +28,13 @@ function resolveHTMLToJSX(html) {
     .replace(/__cls/g, "class");
 }
 
+function hasImportReact(code) {
+  if (!code) {
+    return false;
+  }
+  return /import\s+.+\s+from\s+['"]react['"];?/.test(code);
+}
+
 const { componentRoot, assetsComponentRoot, targetPkgName } = paths;
 
 let componentsCompileArr = [];
@@ -206,7 +213,7 @@ export default ({demos}) => (<article>${html}</article>);
     demoCompCodeArr.map(({ filename, code, cssName }) =>
       writeFile(
         path.resolve(demoWriteBase, filename),
-        `import React from 'react';\n${
+        `${hasImportReact(code) ? "" : `import React from 'react'`};\n${
           cssName ? `import './${cssName}';\n` : "\n"
         }${code}`
       )
