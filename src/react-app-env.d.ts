@@ -72,21 +72,6 @@ declare module "*.module.sass" {
   export default classes;
 }
 
-interface CruDoc {
-  component: FC<PropsWithChildren<any>>;
-  config: {
-    id: string;
-    filename: string;
-    name: string;
-    order: number;
-    dependencies: string;
-    titleList: string[];
-    html: string;
-    content: string;
-    writePath: string;
-  };
-}
-
 declare global {
   interface Doc {
     component: FC<PropsWithChildren<any>>;

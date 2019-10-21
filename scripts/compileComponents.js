@@ -13,6 +13,7 @@ const {
   readFile,
   writeFile,
   removeFile,
+  emptyDir,
   removeFileAsync,
   getFilename,
   exists
@@ -104,7 +105,7 @@ function getDemoConfig(configStr, filename) {
 }
 
 async function deleteExtraFile(dir, retainFiles) {
-  if (!isDir(dir)) {
+  if (!exists(dir) || !isDir(dir)) {
     return;
   }
   // console.log("dir", dir);
@@ -451,6 +452,9 @@ function shouldResolve(filePath) {
 }
 
 async function build() {
+  // clean
+  await emptyDir(assetsComponentRoot);
+  // parse
   const children = await readDir(componentRoot, true);
   for (let i = 0, len = children.length; i < len; i++) {
     const compBase = children[i];

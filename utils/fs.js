@@ -91,6 +91,7 @@ function copyFile(src, dest) {
 }
 
 function emptyDir(dir) {
+  fs.ensureDirSync(dir);
   return fs.emptyDir(dir);
 }
 
