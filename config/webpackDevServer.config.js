@@ -4,7 +4,7 @@ const path = require("path");
 const errorOverlayMiddleware = require("react-dev-utils/errorOverlayMiddleware");
 const evalSourceMapMiddleware = require("react-dev-utils/evalSourceMapMiddleware");
 const noopServiceWorkerMiddleware = require("react-dev-utils/noopServiceWorkerMiddleware");
-const escape = require("react-dev-utils/escape-string-regexp");
+const escape = require("escape-string-regexp");
 const paths = require("./paths");
 const fs = require("fs");
 
