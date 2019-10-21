@@ -1,7 +1,7 @@
 const chokidar = require("chokidar");
 const chalk = require("chalk");
 const paths = require("../utils/paths");
-const cruConfig = require('../config/config')
+const cruConfig = require("../config/config");
 const path = require("path");
 const channel = require("./channel");
 const { executeDelay } = require("../utils");
@@ -33,11 +33,11 @@ const { docRoot, assetsDocRoot } = paths;
 let docsCompileArr = [];
 
 const docs = {};
-const suffix = cruConfig.typescript ? 'tsx' : 'jsx';
+const suffix = cruConfig.typescript ? "tsx" : "jsx";
 
 const mdHeaderConfigRegExp = /^---(?!dependencies)([\s\S]*?)---$/im;
 const mdHeaderDependenciesRegExp = /^---dependencies([\s\S]+)---$/im;
-const configMapRegExp = /(order|name)[:：]\s*([^\s\n]*)/gi;
+const configMapRegExp = /(order|name)[:：]\s*([^\r\n;]*)\s*/gi;
 
 function getConfig(configStr, filename, index = 0) {
   const defaultName = getFilename(filename, ".md");
@@ -114,14 +114,17 @@ async function parseOne(mdPath, index) {
   // console.log("md", md);
   const filenameWithoutExt = getFilename(md.filename, ".md");
   const compFilename = `${filenameWithoutExt}.${suffix}`;
-  const writeJsPath = path.resolve(assetsDocRoot, `${md.name}.${suffix}`);
+  const jsFilename = `${filenameWithoutExt}-data.${suffix}`;
+  md.jsFilename = jsFilename;
+  md.compFilename = compFilename
+  const writeJsPath = path.resolve(assetsDocRoot, jsFilename);
   const writeCompPath = path.resolve(assetsDocRoot, compFilename);
   md.writePath = writeJsPath;
   const writeContent = `import React from 'react';
 import asyncComponent from 'toolSrc/components/asyncComponent';
 import withActiveAnchor from 'toolSrc/hoc/withActiveAnchor';
 
-const Comp = asyncComponent(() => import(/* webpackChunkName: "doc-${filenameWithoutExt}" */'./${filenameWithoutExt}'), withActiveAnchor);
+const Comp = asyncComponent(() => import(/* webpackChunkName: "doc-${filenameWithoutExt}" */'./${compFilename}'), withActiveAnchor);
 export default {component: () => <Comp/>, config: ${JSON.stringify(md)}}`;
   const writeCompContent = `import React from 'react';
 ${md.dependencies}
@@ -151,11 +154,12 @@ async function generateIndex() {
   }
   keys.forEach(key => {
     const md = docs[key];
-    const { name } = md;
-    const filename = `${name}.${suffix}`;
+    const { jsFilename } = md;
     const index = importArr.length;
     const importName = `comp_${index}`;
-    importArr.push(`import ${importName} from './${filename}';`);
+    importArr.push(
+      `import ${importName} from './${jsFilename}';`
+    );
     exportArr.push(importName);
   });
   const indexContent = `${importArr.join(
