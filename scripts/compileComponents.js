@@ -242,7 +242,7 @@ export default ({demos}) => (<article>${html}</article>);
 
 async function parseOne(compBase) {
   // console.log("parseOne compBase", compBase);
-  // todo: 根据index 和 md解析出组件数据到component中;
+  // 根据index 和 md解析出组件数据到component中;
   const indexPath = path.resolve(compBase, `index.${suffix}`);
   const indexMdPath = path.resolve(compBase, "index.md");
   if (!exists(indexPath) || !exists(indexMdPath)) {
@@ -360,6 +360,7 @@ async function generateIndex() {
   const compsPath = path.resolve(assetsComponentRoot, "comps.js");
   const indexPath = path.resolve(assetsComponentRoot, "index.js");
   const compsArr = [];
+  const compNameArr = [];
   const importArr = [];
   const exportArr = [];
   const keys = Object.keys(components);
@@ -374,12 +375,22 @@ async function generateIndex() {
       demoInfo
     } = components[key];
     const { name, filename } = config;
-    compsArr.push(`export {default as ${name}} from 'components/${filename}';`);
+    compsArr.push(`import ${name} from 'components/${filename}';`);
+    compNameArr.push(name);
     const importName = `Comp_${i}`;
     importArr.push(`import ${importName} from './${filename}';`);
     exportArr.push(importName);
   });
-  const compsContent = compsArr.join("\n");
+  const compsContent = `${compsArr.join("\n")}
+
+export {
+  ${compNameArr.join(',\n\s\s')}
+}
+
+export default {
+  ${compNameArr.join(',\n\s\s')}
+}
+`;
   const indexContent = `${importArr.join(
     "\n"
   )}\n\nexport default [${exportArr.join(", ")}].sort((a, b) => {
