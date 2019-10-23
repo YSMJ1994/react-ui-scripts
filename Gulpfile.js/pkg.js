@@ -13,6 +13,7 @@ const isTs = cruConfig.typescript;
 async function generatePkg() {
   const json = JSON.parse(JSON.stringify(targetPkgJson));
   Reflect.deleteProperty(json, "scripts");
+  Reflect.deleteProperty(json, "private");
   Reflect.deleteProperty(json.dependencies, "react-ui-scripts");
   json.files = [...(json.files || []), "es", "lib", "typings"];
   // 去重

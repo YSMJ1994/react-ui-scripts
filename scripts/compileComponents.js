@@ -360,7 +360,6 @@ async function generateIndex() {
   const compsPath = path.resolve(assetsComponentRoot, "comps.js");
   const indexPath = path.resolve(assetsComponentRoot, "index.js");
   const compsArr = [];
-  const compNameArr = [];
   const importArr = [];
   const exportArr = [];
   const keys = Object.keys(components);
@@ -375,22 +374,12 @@ async function generateIndex() {
       demoInfo
     } = components[key];
     const { name, filename } = config;
-    compsArr.push(`import ${name} from 'components/${filename}';`);
-    compNameArr.push(name);
+    compsArr.push(`export { default as ${name} } from 'components/${filename}';`);
     const importName = `Comp_${i}`;
     importArr.push(`import ${importName} from './${filename}';`);
     exportArr.push(importName);
   });
-  const compsContent = `${compsArr.join("\n")}
-
-export {
-  ${compNameArr.join(',\n\s\s')}
-}
-
-export default {
-  ${compNameArr.join(',\n\s\s')}
-}
-`;
+  const compsContent = `${compsArr.join("\n")}`;
   const indexContent = `${importArr.join(
     "\n"
   )}\n\nexport default [${exportArr.join(", ")}].sort((a, b) => {
