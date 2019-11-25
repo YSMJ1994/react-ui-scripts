@@ -14,14 +14,15 @@ async function generatePkg() {
   const json = JSON.parse(JSON.stringify(targetPkgJson));
   Reflect.deleteProperty(json, "scripts");
   Reflect.deleteProperty(json, "private");
+  Reflect.deleteProperty(json, "typings");
   Reflect.deleteProperty(json.dependencies, "react-ui-scripts");
-  json.files = [...(json.files || []), "es", "lib", "typings"];
+  json.files = [...(json.files || []), "es", "lib"];
   // 去重
   arrayDuplicateRemoval(json.files);
   json.main = "lib/index.js";
   json["module"] = "es/index.js";
   json.license = "MIT";
-  json.typings = "typings/index.d.ts";
+  // json.typings = "es/index.d.ts";
 
   isTs &&
     exists(path.resolve(libraryBuild, "es/index.d.ts")) &&

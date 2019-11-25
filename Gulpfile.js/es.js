@@ -33,7 +33,7 @@ const jsSuffixArr = isTs ? ["tsx", "ts"] : ["jsx", "js"];
 const output = "es";
 const nodeDestPath = path.resolve(libraryBuild, output);
 const destPath = path2GulpPath(nodeDestPath + "/");
-const typingPath = path2GulpPath(path.resolve(libraryBuild, "typings"));
+const typingPath = path2GulpPath(path.resolve(libraryBuild, output));
 const root = path2GulpPath(componentRoot);
 
 const scssJsContent = `import "../../style/index.${cssSuffix}";\nimport "./index.${cssSuffix}";\n`;
