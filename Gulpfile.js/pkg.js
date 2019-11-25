@@ -9,6 +9,7 @@ const { arrayDuplicateRemoval } = require("../utils");
 const { src, dest, series, parallel } = require("gulp");
 const targetPkgJson = require(targetPkg);
 const isTs = cruConfig.typescript;
+const pkgPath = path.resolve(libraryBuild, "package.json");
 
 async function generatePkg() {
   const json = JSON.parse(JSON.stringify(targetPkgJson));
@@ -27,7 +28,10 @@ async function generatePkg() {
   isTs &&
     exists(path.resolve(libraryBuild, "es/index.d.ts")) &&
     (json.typings = "es/index.d.ts");
-  const pkgPath = path.resolve(libraryBuild, "package.json");
+  if(exists(pkgPath)) {
+      const oldPkg = require(pkgPath);
+      json.version = oldPkg.version
+  }
   await writeJSON(pkgPath, json);
 }
 
