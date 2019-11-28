@@ -247,7 +247,15 @@ export default ({demos}) => (<article>${html}</article>);
 
 async function parseOne(compBase) {
   const compBaseName = getFilename(compBase);
-  components[compBase] = `${compBaseName}/index.md`;
+  const mdPath = path.resolve(compBase, "index.md");
+  const mdContent = await readFile(mdPath);
+  const nameMatch = mdContent.match(/---[\s\S]*name[:：]\s*(\w+)[\s\S]*---/i);
+  const name = nameMatch ? nameMatch[1] : compBaseName;
+  components[compBase] = {
+    mdName: `${compBaseName}/index.md`,
+    compBaseName,
+    name
+  };
   componentsCompileArr.push(compBaseName);
   console.log(
     `parse component: [ ${chalk.greenBright(compBaseName)} ] success!`
@@ -256,16 +264,22 @@ async function parseOne(compBase) {
 
 async function generateIndex() {
   const indexPath = path.resolve(assetsComponentRoot, "index.js");
+  const compsPath = path.resolve(assetsComponentRoot, "comps.js");
+  const compsArr = [];
   const importArr = [];
   const exportArr = [];
   const keys = Object.keys(components);
   // 写入组件
   keys.forEach((key, i) => {
-    const mdName = components[key];
+    const { mdName, compBaseName, name } = components[key];
+    compsArr.push(
+      `export {default as ${name}} from 'components/${compBaseName}';`
+    );
     const importName = `Comp_${i}`;
     importArr.push(`import ${importName} from 'components/${mdName}';`);
     exportArr.push(importName);
   });
+  const compsContent = compsArr.join("\n");
   const indexContent = `${importArr.join(
     "\n"
   )}\n\nexport default [${exportArr.join(", ")}].sort((a, b) => {
@@ -275,6 +289,7 @@ async function generateIndex() {
     return a.config.order - b.config.order;
   }
 });`;
+  await writeFile(compsPath, compsContent);
   await writeFile(indexPath, indexContent);
   if (generateIndexTask.length) {
     // 依次执行任务
