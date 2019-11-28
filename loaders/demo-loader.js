@@ -48,5 +48,5 @@ module.exports = async function(source, map, meta) {
   }
   const modulePath = this.resourcePath;
   const result = await demoLoader(modulePath, source, meta);
-  callback(null, result, map);
+  callback(null, result);
 }

@@ -9,7 +9,7 @@ const demoReplaceRegExp = /<!--\s*demo\s*-->/i;
 async function compLoader(source, map, meta) {
   const callback = this.async();
   if (!meta) {
-    callback(new Error("comp-loader require after config-loader"), source);
+    callback(new Error("comp-loader require after config-loader"));
     return;
   }
   const { name, order, sub, type } = meta;
@@ -73,7 +73,7 @@ export default {
   component: () => <Comp demos={demos} />
 };
 `;
-  callback(null, result, map);
+  callback(null, result);
 }
 
 module.exports = compLoader;

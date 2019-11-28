@@ -64,6 +64,6 @@ function configLoader(modulePath, source) {
 module.exports = function(source) {
   const modulePath = this.resourcePath;
   const { result, config } = configLoader(modulePath, source);
-  this.callback(null, result, source, config);
+  this.callback(null, result, undefined, config);
   return;
 }

@@ -23,7 +23,7 @@ function resolveHTMLToJSX(html) {
 
 function docLoader(source, map, meta) {
   if (!meta) {
-    this.callback(new Error("doc-loader require after config-loader"), source);
+    this.callback(new Error("doc-loader require after config-loader"));
     return;
   }
   let titleList = [];
@@ -52,7 +52,7 @@ export default {
 	}
 }
 `;
-  this.callback(null, result, map);
+  this.callback(null, result);
 }
 
 module.exports = docLoader;
