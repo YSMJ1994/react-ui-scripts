@@ -14,6 +14,8 @@ const componentRoot = resolveTarget(src.library);
 const publicRoot = resolveTarget(staticObj.doc);
 const assetsComponentRoot = resolveTool("assets/components");
 const assetsDocRoot = resolveTool("assets/docs");
+const assetsStyle = "assets/styles";
+const assetsStyleRoot = resolveTool(assetsStyle);
 const toolSrc = resolveTool("src");
 const targetPkgName = require(resolveTarget("package.json")).name;
 
@@ -30,6 +32,8 @@ module.exports = {
   resolveTarget,
   resolveTool,
   resolveLoader,
-    srcLibrary: src.library,
-    srcDoc: src.doc
+  srcLibrary: src.library,
+  srcDoc: src.doc,
+  assetsStyle,
+  assetsStyleRoot
 };

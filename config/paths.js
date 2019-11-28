@@ -14,7 +14,9 @@ const {
   resolveTool,
   resolveLoader,
   srcDoc,
-  srcLibrary
+  srcLibrary,
+  assetsStyle,
+  assetsStyleRoot
 } = require("../utils/paths");
 
 const { output, static: staticObj, src } = require("./config");
@@ -76,7 +78,9 @@ module.exports = {
   resolveTool,
   resolveLoader,
   srcDoc,
-  srcLibrary
+  srcLibrary,
+  assetsStyle,
+  assetsStyleRoot
 };
 
 module.exports.moduleFileExtensions = moduleFileExtensions;

@@ -36,7 +36,12 @@ function hasImportReact(code) {
   return !!match && !!String(match[1]).match(/React/);
 }
 
-const { componentRoot, assetsComponentRoot, targetPkgName } = paths;
+const {
+  componentRoot,
+  assetsComponentRoot,
+  targetPkgName,
+  assetsStyleRoot
+} = paths;
 
 let componentsCompileArr = [];
 const components = {};
@@ -341,6 +346,7 @@ function shouldResolve(filePath) {
 async function build() {
   // clean
   // await emptyDir(assetsComponentRoot);
+  await emptyDir(assetsStyleRoot);
   // parse
   const children = await readDir(componentRoot, true);
   for (let i = 0, len = children.length; i < len; i++) {

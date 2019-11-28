@@ -1,6 +1,6 @@
 const HighLight = require("highlight.js");
 const path = require("path");
-const { resolveTool } = require("../config/paths");
+const { assetsStyle, assetsStyleRoot } = require("../config/paths");
 const { writeFile } = require("../utils/fs");
 const { hasImportReact, string2hex } = require("../utils");
 const getMDT = require("../utils/MDT");
@@ -8,7 +8,6 @@ const MDT = getMDT();
 const demoCodeRegExp = /^```.*[jt]sx.*\n([\s\S]*?)```$/im;
 const demoCssCodeRegExp = /^```(css|sass|scss|less).*\n([\s\S]*?)```$/im;
 const defaultDemoCode = "export default () => null;";
-const cacheBase = resolveTool("src/assets/styles/");
 
 async function demoLoader(modulePath, source, config) {
   const demoCodeMatch = source.match(demoCodeRegExp) || [];
@@ -22,11 +21,15 @@ async function demoLoader(modulePath, source, config) {
   const description = MDT.render(demoParseContent);
   const highLightCode = HighLight.highlight("jsx", code).value;
   const { id, filename, order, title } = config;
-  const cssFilename = `${string2hex(modulePath)}.${cssSuffix}`;
-  const cssCacheFilePath = path.resolve(cacheBase, cssFilename);
-  await writeFile(cssCacheFilePath, css || "");
+  let importCssStr = "";
+  if (css) {
+    const cssFilename = `${string2hex(modulePath)}.${cssSuffix}`;
+    const cssCacheFilePath = path.resolve(assetsStyleRoot, cssFilename);
+    await writeFile(cssCacheFilePath, css);
+    importCssStr = `import 'react-ui-scripts/${assetsStyle}/${cssFilename}';`;
+  }
   return `${hasImportReact(code) ? "" : `import React from 'react';`}
-import '/node_modules/react-ui-scripts/src/assets/styles/${cssFilename}';
+${importCssStr}
 ${code}
 
 export const config = {
@@ -49,4 +52,4 @@ module.exports = async function(source, map, meta) {
   const modulePath = this.resourcePath;
   const result = await demoLoader(modulePath, source, meta);
   callback(null, result);
-}
+};
