@@ -65,7 +65,7 @@ export default {
   config: {
     id: ${JSON.stringify(compBase)},
     order: ${JSON.stringify(order)},
-    type: ${JSON.stringify(type)}",
+    type: ${JSON.stringify(type)},
     name: ${JSON.stringify(compName)},
     sub: ${JSON.stringify(sub)},
     demos
