@@ -44,11 +44,15 @@ module.exports = function(webpackEnv) {
   const isEnvProduction = webpackEnv === "production";
 
   const publicPath = isEnvProduction
-    ? /\/$/.test(paths.servedPath) ?  paths.servedPath : `${paths.servedPath}/`
+    ? /\/$/.test(paths.servedPath)
+      ? paths.servedPath
+      : `${paths.servedPath}/`
     : isEnvDevelopment && "/";
   const shouldUseRelativeAssetPaths = publicPath === "./";
   const publicUrl = isEnvProduction
-    ? /\/$/.test(publicPath) ? publicPath.slice(0, -1) : publicPath
+    ? /\/$/.test(publicPath)
+      ? publicPath.slice(0, -1)
+      : publicPath
     : isEnvDevelopment && "";
   const env = getClientEnvironment(publicUrl);
 
@@ -98,6 +102,31 @@ module.exports = function(webpackEnv) {
       );
     }
     return loaders;
+  };
+
+  const babelOption = {
+    customize: require.resolve("babel-preset-react-app/webpack-overrides"),
+
+    plugins: [
+      [
+        require.resolve("babel-plugin-named-asset-import"),
+        {
+          loaderMap: {
+            svg: {
+              ReactComponent: "@svgr/webpack?-svgo,+titleProp,+ref![path]"
+            }
+          }
+        }
+      ]
+    ],
+    presets: [require.resolve("babel-preset-react-app")],
+    // This is a feature of `babel-loader` for webpack (not Babel itself).
+    // It enables caching results in ./node_modules/.cache/babel-loader/
+    // directory for faster rebuilds.
+    cacheDirectory: true,
+    // See #6846 for context on why cacheCompression is disabled
+    cacheCompression: false,
+    compact: isEnvProduction
   };
 
   return {
@@ -217,6 +246,7 @@ module.exports = function(webpackEnv) {
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
         "react-native": "react-native-web",
         components: paths.componentRoot,
+        doc: paths.docRoot,
         [`${targetPkg.name}$`]: paths.toolComponentIndex,
         [targetPkg.name]: paths.componentRoot,
         public: paths.publicRoot,
@@ -288,33 +318,7 @@ module.exports = function(webpackEnv) {
                 paths.assetsDocRoot
               ],
               loader: require.resolve("babel-loader"),
-              options: {
-                customize: require.resolve(
-                  "babel-preset-react-app/webpack-overrides"
-                ),
-
-                plugins: [
-                  [
-                    require.resolve("babel-plugin-named-asset-import"),
-                    {
-                      loaderMap: {
-                        svg: {
-                          ReactComponent:
-                            "@svgr/webpack?-svgo,+titleProp,+ref![path]"
-                        }
-                      }
-                    }
-                  ]
-                ],
-                presets: [require.resolve("babel-preset-react-app")],
-                // This is a feature of `babel-loader` for webpack (not Babel itself).
-                // It enables caching results in ./node_modules/.cache/babel-loader/
-                // directory for faster rebuilds.
-                cacheDirectory: true,
-                // See #6846 for context on why cacheCompression is disabled
-                cacheCompression: false,
-                compact: isEnvProduction
-              }
+              options: babelOption
             },
             // Process any JS outside of the app with Babel.
             // Unlike the application JS, we only compile the standard ES features.
@@ -407,36 +411,75 @@ module.exports = function(webpackEnv) {
                 "sass-loader"
               )
             },
-              {
-                  test: lessRegex,
-                  exclude: lessModuleRegex,
-                  use: getStyleLoaders(
-                      {
-                          importLoaders: 2,
-                          sourceMap: isEnvProduction && shouldUseSourceMap
-                      },
-                      "less-loader"
-                  ),
-                  // Don't consider CSS imports dead code even if the
-                  // containing package claims to have no side effects.
-                  // Remove this when webpack adds a warning or an error for this.
-                  // See https://github.com/webpack/webpack/issues/6571
-                  sideEffects: true
-              },
-              // Adds support for CSS Modules, but using SASS
-              // using the extension .module.scss or .module.sass
-              {
-                  test: lessModuleRegex,
-                  use: getStyleLoaders(
-                      {
-                          importLoaders: 2,
-                          sourceMap: isEnvProduction && shouldUseSourceMap,
-                          modules: true,
-                          getLocalIdent: getCSSModuleLocalIdent
-                      },
-                      "less-loader"
-                  )
-              },
+            {
+              test: lessRegex,
+              exclude: lessModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction && shouldUseSourceMap
+                },
+                "less-loader"
+              ),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See https://github.com/webpack/webpack/issues/6571
+              sideEffects: true
+            },
+            // Adds support for CSS Modules, but using SASS
+            // using the extension .module.scss or .module.sass
+            {
+              test: lessModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction && shouldUseSourceMap,
+                  modules: true,
+                  getLocalIdent: getCSSModuleLocalIdent
+                },
+                "less-loader"
+              )
+            },
+            {
+              test: /\.md$/,
+              include: [paths.docRoot],
+              use: [
+                {
+                  loader: require.resolve("babel-loader"),
+                  options: babelOption
+                },
+                paths.resolveLoader("doc-loader.js"),
+                paths.resolveLoader("config-loader.js")
+              ]
+            },
+            {
+              test: /\.md$/,
+              include: [paths.componentRoot],
+              exclude: [new RegExp(`${paths.componentRoot}/[^/]+/demo/`)],
+              use: [
+                {
+                  loader: require.resolve("babel-loader"),
+                  options: babelOption
+                },
+                paths.resolveLoader("comp-loader.js"),
+                paths.resolveLoader("config-loader.js")
+              ]
+            },
+            {
+              test: /\.md$/,
+              include: [
+                new RegExp(`${paths.componentRoot}/[^/]+/demo/.+\\.md$`)
+              ],
+              use: [
+                {
+                  loader: require.resolve("babel-loader"),
+                  options: babelOption
+                },
+                paths.resolveLoader("demo-loader.js"),
+                paths.resolveLoader("config-loader.js")
+              ]
+            },
             // "file" loader makes sure those assets get served by WebpackDevServer.
             // When you `import` an asset, you get its (virtual) filename.
             // In production, they would get copied to the `build` folder.

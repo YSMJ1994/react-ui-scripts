@@ -178,7 +178,7 @@ async function writeComp(comp) {
   const writeIndexContent = `import React from 'react';
 import asyncComponent from 'toolSrc/components/asyncComponent';
 import withActiveAnchor from 'toolSrc/hoc/withActiveAnchor';
-        
+
 const demos = [${demoStrArr.join(",\n")}].sort((a, b) => {
   if (a.config.order === b.config.order) {
     return a.config.title >= b.config.title ? 1 : -1;
@@ -241,145 +241,26 @@ export default ({demos}) => (<article>${html}</article>);
 }
 
 async function parseOne(compBase) {
-  // console.log("parseOne compBase", compBase);
-  // 根据index 和 md解析出组件数据到component中;
-  const indexPath = path.resolve(compBase, `index.${suffix}`);
-  const indexMdPath = path.resolve(compBase, "index.md");
-  if (!exists(indexPath) || !exists(indexMdPath)) {
-    console.log("parse one indexPath or indexMdPath not exists");
-    return;
-  }
   const compBaseName = getFilename(compBase);
-  const writeBase = path.resolve(assetsComponentRoot, compBaseName);
-  let comp = {
-    indexInfo: {
-      writeBase: writeBase,
-      config: {},
-      html: ""
-    },
-    demoInfo: {
-      /*'id': {
-              id: '',
-              filename: '',
-              order: 0,
-              title: '',
-              content: '',
-              description: '',
-              code: '',
-              writePath: ''
-          }*/
-    }
-  };
-  let config = {
-    id: compBase,
-    filename: compBaseName,
-    order: 0,
-    type: "其他",
-    name: compBaseName,
-    sub: ""
-  };
-  const content = await readFile(indexMdPath);
-  const configMatch = String(content).match(configRegExp);
-  if (configMatch) {
-    comp.indexInfo.config = {
-      ...config,
-      ...getConfig(configMatch[1], compBaseName, 0)
-    };
-  }
-  const parseContent = content.replace(configRegExp, "");
-  let parseHtml = resolveHTMLToJSX(MDT.render(parseContent));
-  if (parseHtml.match(demoReplaceRegExp)) {
-    parseHtml = parseHtml.replace(
-      demoReplaceRegExp,
-      "<DemoWrap list={demos}/>"
-    );
-  } else {
-    parseHtml += "\n<DemoWrap list={demos}/>";
-  }
-  comp.indexInfo.html = parseHtml;
-  const demoBase = path.resolve(compBase, "demo");
-  if (exists(demoBase)) {
-    const demoChildren = await readDir(demoBase);
-    let demos = {};
-    for (let i = 0, len = demoChildren.length; i < len; i++) {
-      const demoChildName = demoChildren[i];
-      const demoChildPath = path.resolve(demoBase, demoChildName);
-      if (isFile(demoChildPath) && /\.md$/.test(demoChildName)) {
-        // 处理demo目录下的markdown文件
-        const id = demoChildPath;
-        let demo = {
-          id: id,
-          filename: demoChildName,
-          order: 0,
-          title: "",
-          content: "",
-          description: "",
-          code: "",
-          writePath: ""
-        };
-        const demoText = await readFile(demoChildPath);
-        const demoConfigMatch = demoText.match(configRegExp) || [];
-        const demoConfig = getDemoConfig(
-          demoConfigMatch[1],
-          getFilename(demoChildPath, ".md")
-        );
-        // console.log("demoConfig", demoConfig);
-        demo = { ...demo, ...demoConfig };
-        const demoCodeMatch = demoText.match(demoCodeRegExp) || [];
-        const demoCssMatch = demoText.match(demoCssCodeRegExp) || [];
-        demo.code = demoCodeMatch[1] || defaultDemoCode;
-        demo.css = demoCssMatch[2];
-        demo.cssSuffix = demoCssMatch[1];
-        const demoParseContent = demoText
-          .replace(configRegExp, "")
-          .replace(demoCodeRegExp, "")
-          .replace(demoCssCodeRegExp, "");
-        demo.description = MDT.render(demoParseContent);
-        demos[id] = demo;
-      } else {
-        // 其他文件不处理
-      }
-    }
-    comp.demoInfo = demos;
-  } else {
-    comp.demoInfo = {};
-  }
-  // console.log("comp", comp);
-  // 写入组件内容任务
-  comp.write = async () => {
-    await writeComp(comp);
-  };
-  components[compBase] = comp;
+  components[compBase] = `${compBaseName}/index.md`;
+  componentsCompileArr.push(compBaseName);
   console.log(
-    `parse component: [ ${chalk.greenBright(config.name)} ] success!`
+    `parse component: [ ${chalk.greenBright(compBaseName)} ] success!`
   );
-  componentsCompileArr.push(config.name);
 }
 
 async function generateIndex() {
-  const compsPath = path.resolve(assetsComponentRoot, "comps.js");
   const indexPath = path.resolve(assetsComponentRoot, "index.js");
-  const compsArr = [];
   const importArr = [];
   const exportArr = [];
   const keys = Object.keys(components);
   // 写入组件
-  for (let i = 0, len = keys.length; i < len; i++) {
-    const comp = components[keys[i]];
-    await comp.write();
-  }
   keys.forEach((key, i) => {
-    const {
-      indexInfo: { config },
-      demoInfo
-    } = components[key];
-    const { name, filename } = config;
-    compsArr.push(`export { default as ${name} } from 'components/${filename}';`);
+    const mdName = components[key];
     const importName = `Comp_${i}`;
-    importArr.push(`import ${importName} from './${filename}';`);
+    importArr.push(`import ${importName} from 'components/${mdName}';`);
     exportArr.push(importName);
   });
-  const compsContent = `${compsArr.join("\n")}`;
   const indexContent = `${importArr.join(
     "\n"
   )}\n\nexport default [${exportArr.join(", ")}].sort((a, b) => {
@@ -389,7 +270,6 @@ async function generateIndex() {
     return a.config.order - b.config.order;
   }
 });`;
-  await writeFile(compsPath, compsContent);
   await writeFile(indexPath, indexContent);
   if (generateIndexTask.length) {
     // 依次执行任务
@@ -406,7 +286,6 @@ async function generateIndex() {
   }
   channel.emit(null, componentsCompileArr);
   componentsCompileArr = [];
-  console.log("generate success");
 }
 
 function getRelativePath(basePath, fullPath) {
@@ -461,7 +340,7 @@ function shouldResolve(filePath) {
 
 async function build() {
   // clean
-  await emptyDir(assetsComponentRoot);
+  // await emptyDir(assetsComponentRoot);
   // parse
   const children = await readDir(componentRoot, true);
   for (let i = 0, len = children.length; i < len; i++) {
@@ -503,31 +382,16 @@ async function start() {
     switch (action) {
       case "add": {
         // 添加文件
-        await parseOne(compIdPath);
+        if (pathStep.length === 2) {
+          await parseOne(compIdPath);
+        }
         break;
       }
       case "unlink": {
         // 删除文件
         if (pathStep.length === 2) {
-          // index文件的删除，则删除组件
-          if (comp) {
-            // 删除组件要在index生成之后删除，避免webpack报错;
-            generateIndexTask.push(function() {
-              return removeFileAsync(comp.indexInfo.writeBase);
-            });
-          }
           Reflect.deleteProperty(components, compIdPath);
-        } else if (pathStep.length === 3) {
-          // demo markdown文件的删除
-          await parseOne(compIdPath);
-        } else {
-          // 超过3级则不为设定的目录结构，不做处理
         }
-        break;
-      }
-      case "change": {
-        // 修改文件
-        await parseOne(compIdPath);
         break;
       }
     }

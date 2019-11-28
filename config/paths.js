@@ -11,10 +11,13 @@ const {
   assetsDocRoot,
   toolSrc,
   resolveTarget,
-  resolveTool
+  resolveTool,
+  resolveLoader,
+  srcDoc,
+  srcLibrary
 } = require("../utils/paths");
 
-const {output, static: staticObj, src} = require('./config')
+const { output, static: staticObj, src } = require("./config");
 
 const moduleFileExtensions = [
   "web.mjs",
@@ -70,7 +73,10 @@ module.exports = {
   assetsDocRoot,
   toolSrc,
   resolveTarget,
-  resolveTool
+  resolveTool,
+  resolveLoader,
+  srcDoc,
+  srcLibrary
 };
 
 module.exports.moduleFileExtensions = moduleFileExtensions;

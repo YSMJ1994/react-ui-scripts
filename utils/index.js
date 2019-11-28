@@ -42,8 +42,35 @@ function arrayDuplicateRemoval(arr) {
   return deleteArr;
 }
 
+function hasImportReact(code) {
+  if (!code) {
+    return false;
+  }
+  const match = String(code).match(/import\s+(.+)\s+from\s+['"]react['"];?/);
+  return !!match && !!String(match[1]).match(/React/);
+}
+
+function string2hex(str, encoding = "utf8") {
+  return Buffer.from(str, encoding).toString("hex");
+}
+
+function hex2string(str, encoding = "hex") {
+  return Buffer.from(str, encoding).toString("utf8");
+}
+
+function resolveHTMLToJSX(html) {
+  return String(html)
+    .replace(/class="/g, 'className="')
+    .replace(/style="([^"]*)"/g, "style={}")
+    .replace(/__cls/g, "class");
+}
+
 module.exports = {
   executeDelay,
   path2GulpPath,
-  arrayDuplicateRemoval
+  arrayDuplicateRemoval,
+  hasImportReact,
+  string2hex,
+  hex2string,
+  resolveHTMLToJSX
 };
