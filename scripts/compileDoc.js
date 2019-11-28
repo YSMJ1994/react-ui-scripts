@@ -1,4 +1,5 @@
 const chokidar = require("chokidar");
+const chalk = require('chalk');
 const paths = require("../utils/paths");
 const path = require("path");
 const channel = require("./channel");
