@@ -1,9 +1,8 @@
-import HighLight from "highlight.js";
-import path from "path";
-import { resolveTool } from "../config/paths";
-import { writeFile } from "../utils/fs";
-import { hasImportReact, string2hex } from "../utils";
-
+const HighLight = require("highlight.js");
+const path = require("path");
+const { resolveTool } = require("../config/paths");
+const { writeFile } = require("../utils/fs");
+const { hasImportReact, string2hex } = require("../utils");
 const getMDT = require("../utils/MDT");
 const MDT = getMDT();
 const demoCodeRegExp = /^```.*[jt]sx.*\n([\s\S]*?)```$/im;
@@ -41,7 +40,7 @@ export const config = {
 `;
 }
 
-export default async function(source, map, meta) {
+module.exports = async function(source, map, meta) {
   const callback = this.async();
   if (!meta) {
     callback(new Error("comp-loader require after config-loader"));

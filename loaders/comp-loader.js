@@ -1,6 +1,6 @@
-import path from "path";
-import { readDir, isFile, getFilename, exists } from "../utils/fs";
-import { resolveHTMLToJSX } from "../utils";
+const path = require("path");
+const { readDir, isFile, getFilename, exists } = require("../utils/fs");
+const { resolveHTMLToJSX } = require("../utils");
 
 const getMDT = require("../utils/MDT");
 const MDT = getMDT();
@@ -9,7 +9,7 @@ const demoReplaceRegExp = /<!--\s*demo\s*-->/i;
 async function compLoader(source, map, meta) {
   const callback = this.async();
   if (!meta) {
-    this.callback(new Error("comp-loader require after config-loader"), source);
+    callback(new Error("comp-loader require after config-loader"), source);
     return;
   }
   const { name, order, sub, type } = meta;

@@ -1,5 +1,4 @@
-import { getFilename } from "../utils/fs";
-
+const { getFilename } = require("../utils/fs");
 const configRegExp = /---(?!dependencies)([\s\S]*?)---/i;
 const dependenciesRegExp = /---dependencies([\s\S]*?)---/i;
 const configMapRegExp = /(order|type|name|sub|title)[:：]\s*([^\r\n;]*)\s*/gi;
@@ -15,7 +14,7 @@ function getConfigByStr(string) {
   return config;
 }
 
-export function configLoader(modulePath, source) {
+function configLoader(modulePath, source) {
   const name = getFilename(modulePath, ".md");
   const filename = getFilename(modulePath);
   let str = source;
@@ -62,7 +61,7 @@ export function configLoader(modulePath, source) {
   };
 }
 
-export default function(source) {
+module.exports = function(source) {
   const modulePath = this.resourcePath;
   const { result, config } = configLoader(modulePath, source);
   this.callback(null, result, source, config);

@@ -1,6 +1,6 @@
-import { hasImportReact } from "../utils/index";
-import HighLight from "highlight.js";
-import getMDT from "../utils/MDT";
+const HighLight = require("highlight.js");
+const { hasImportReact } = require("../utils/index");
+const getMDT = require("../utils/MDT");
 
 const mdtConfig = {
   highlight: function(str, lang) {
