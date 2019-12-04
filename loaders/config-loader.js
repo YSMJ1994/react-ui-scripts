@@ -1,5 +1,5 @@
 const { getFilename } = require("../utils/fs");
-const configRegExp = /---(?!dependencies)([\s\S]*?)---/i;
+const configRegExp = /---config([\s\S]*?)---/i;
 const dependenciesRegExp = /---dependencies([\s\S]*?)---/i;
 const configMapRegExp = /(order|type|name|sub|title)[:：]\s*([^\r\n;]*)\s*/gi;
 
