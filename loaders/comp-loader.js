@@ -12,7 +12,7 @@ async function compLoader(source, map, meta) {
     callback(new Error("comp-loader require after config-loader"));
     return;
   }
-  const { name, order, sub, type } = meta;
+  let { name, order, sub = '', type = '未分配' } = meta;
   const compBase = this.context;
   const compName = name || getFilename(compBase);
   const demoBase = path.resolve(compBase, "demo");

@@ -20,7 +20,10 @@ async function demoLoader(modulePath, source, config) {
     .replace(demoCssCodeRegExp, "");
   const description = MDT.render(demoParseContent);
   const highLightCode = HighLight.highlight("jsx", code).value;
-  const { id, filename, order, title } = config;
+  let { id, filename, order, title, name } = config;
+  if(!title) {
+      title = name;
+  }
   let importCssStr = "";
   if (css) {
     const cssFilename = `${string2hex(modulePath)}.${cssSuffix}`;
