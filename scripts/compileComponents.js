@@ -30,6 +30,9 @@ const suffix = cruConfig.typescript ? "tsx" : "jsx";
 async function parseOne(compBase) {
   const compBaseName = getFilename(compBase);
   const mdPath = path.resolve(compBase, "index.md");
+  if(!exists(mdPath)) {
+      return
+  }
   const mdContent = await readFile(mdPath);
   const nameMatch = mdContent.match(/---[\s\S]*name[:：]\s*(\w+)[\s\S]*---/i);
   const name = nameMatch ? nameMatch[1] : compBaseName;
