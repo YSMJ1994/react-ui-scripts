@@ -23,7 +23,9 @@ const DemoGrid: FC<DemoGridProps> = ({ Comp, title, desc, code, linkName }) => {
       id={linkName}
     >
       <div className="comp-wrap">
-        <Comp />
+        <div className="comp-content-box">
+          <Comp />
+        </div>
         <div className="comp-title-box">
           <a href={`#${linkName}`}>{title}</a>
         </div>

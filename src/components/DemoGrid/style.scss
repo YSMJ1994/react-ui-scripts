@@ -22,6 +22,9 @@ $border: 1px solid #ebedf0;
     border-bottom: $border;
     position: relative;
 
+    .comp-content-box {
+      overflow: auto;
+    }
     .comp-title-box {
       position: absolute;
       left: 16px;

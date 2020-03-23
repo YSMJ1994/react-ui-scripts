@@ -7,7 +7,7 @@ interface DemoWrapProps {
 }
 
 const DemoWrap: FC<DemoWrapProps> = ({ list }) => {
-  let leftList: Demo[] = [],
+  /*let leftList: Demo[] = [],
     rightList: Demo[] = [];
   list.forEach((demo, i) => {
     if (i % 2 === 0) {
@@ -15,10 +15,26 @@ const DemoWrap: FC<DemoWrapProps> = ({ list }) => {
     } else {
       rightList.push(demo);
     }
-  });
+  });*/
   return (
     <article className="demo-wrap">
-      <div className="demo-wrap__left">
+      {list.map(demo => {
+        const {
+          component,
+          config: { id, title, description, code, filename }
+        } = demo;
+        return (
+          <DemoGrid
+            key={id}
+            Comp={component}
+            title={title}
+            desc={description}
+            code={code}
+            linkName={filename}
+          />
+        );
+      })}
+      {/*<div className="demo-wrap__left">
         {leftList.map(demo => {
           const {
             component,
@@ -53,7 +69,7 @@ const DemoWrap: FC<DemoWrapProps> = ({ list }) => {
             />
           );
         })}
-      </div>
+      </div>*/}
     </article>
   );
 };
