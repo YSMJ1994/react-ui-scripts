@@ -166,7 +166,7 @@ async function generateImportCss() {
 async function generateIndex() {
   const compIndexJs = path.resolve(nodeDestPath, "index.js");
   const compIndexTyping = path.resolve(typingPath, "index.d.ts");
-  const content = comps
+  const content = 'import "./style/index.css";\n\n' + comps
     .map(({ name, dir }) => {
       return `export { default as ${name} } from './${dir}';`;
     })

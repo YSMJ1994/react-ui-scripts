@@ -61,7 +61,8 @@ async function generateIndex() {
     exportArr.push(importName);
   });
   const compsContent = compsArr.join("\n");
-  const indexContent = `${importArr.join(
+  const indexContent = `import 'components/style/index.scss';
+${importArr.join(
     "\n"
   )}\n\nexport default [${exportArr.join(", ")}].sort((a, b) => {
   if (a.config.order === b.config.order) {

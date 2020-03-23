@@ -151,7 +151,7 @@ async function generateIndex() {
     compIndexJs,
     `"use strict";\n\nObject.defineProperty(exports, "__esModule", {
     value: true
-});\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }\n\n${comps
+});\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }\n\nrequire('./style/index.css');\n\n${comps
       .map(({ name, dir }) => {
         return `var _${name} = require('./${dir}');\nObject.defineProperty(exports, '${name}', {
     enumerable: true,
