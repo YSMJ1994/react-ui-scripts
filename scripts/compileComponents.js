@@ -16,11 +16,7 @@ const {
   exists
 } = require("../utils/fs");
 
-const {
-  componentRoot,
-  assetsComponentRoot,
-  assetsStyleRoot
-} = paths;
+const { componentRoot, assetsComponentRoot, assetsStyleRoot } = paths;
 
 let componentsCompileArr = [];
 const components = {};
@@ -30,8 +26,8 @@ const suffix = cruConfig.typescript ? "tsx" : "jsx";
 async function parseOne(compBase) {
   const compBaseName = getFilename(compBase);
   const mdPath = path.resolve(compBase, "index.md");
-  if(!exists(mdPath)) {
-      return
+  if (!exists(mdPath)) {
+    return;
   }
   const mdContent = await readFile(mdPath);
   const nameMatch = mdContent.match(/---[\s\S]*name[:：]\s*(\w+)[\s\S]*---/i);
@@ -193,9 +189,21 @@ async function start() {
         }
         break;
       }
+      case "change": {
+        // 修改index.md
+        if (pathStep.length === 2 && pathStep[1] === "index.md") {
+          await parseOne(compIdPath);
+        }
+        break;
+      }
       case "unlink": {
         // 删除文件
-        if (pathStep.length === 2) {
+        if (
+          pathStep.length === 2 &&
+          (pathStep[1] === "index.md" ||
+            pathStep[1] === "index.tsx" ||
+            pathStep[1] === "index.tsx")
+        ) {
           Reflect.deleteProperty(components, compIdPath);
         }
         break;
