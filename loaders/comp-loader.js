@@ -1,6 +1,6 @@
 const path = require("path");
 const { readDir, isFile, getFilename, exists } = require("../utils/fs");
-const { resolveHTMLToJSX } = require("../utils");
+const { resolveHTMLToJSX, hasImportReact } = require("../utils");
 
 const getMDT = require("../utils/MDT");
 const MDT = getMDT();
@@ -12,7 +12,7 @@ async function compLoader(source, map, meta) {
     callback(new Error("comp-loader require after config-loader"));
     return;
   }
-  let { name, order, sub = '', type = '未分配' } = meta;
+  let { name, order, sub = "", type = "未分配", dependencies } = meta;
   const compBase = this.context;
   const compName = name || getFilename(compBase);
   const demoBase = path.resolve(compBase, "demo");
@@ -36,7 +36,10 @@ async function compLoader(source, map, meta) {
     html += "\n<DemoWrap list={demos}/>";
   }
 
-  const result = `import React from "react";
+  const result = `${
+    hasImportReact(dependencies) ? "" : 'import React from "react";'
+  }
+${dependencies}
 import withActiveAnchor from "toolSrc/hoc/withActiveAnchor";
 import DemoWrap from "toolSrc/components/DemoWrap";
 ${demos
