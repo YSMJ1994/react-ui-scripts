@@ -31,6 +31,10 @@ const imageInlineSizeLimit = parseInt(
   process.env.IMAGE_INLINE_SIZE_LIMIT || "10000"
 );
 
+function resolvePathRegExp(str) {
+    return str.replace(/[\\/]+/g, '[\\\\/]+')
+}
+
 // style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
@@ -456,7 +460,7 @@ module.exports = function(webpackEnv) {
             {
               test: /\.md$/,
               include: [paths.componentRoot],
-              exclude: [new RegExp(`${paths.componentRoot}/[^/]+/demo/`)],
+              exclude: [new RegExp(`${resolvePathRegExp(paths.componentRoot)}[\\\\/]+[^\\\\/]+[\\\\/]+demo[\\\\/]+`)],
               use: [
                 {
                   loader: require.resolve("babel-loader"),
@@ -469,7 +473,7 @@ module.exports = function(webpackEnv) {
             {
               test: /\.md$/,
               include: [
-                new RegExp(`${paths.componentRoot}/[^/]+/demo/.+\\.md$`)
+                new RegExp(`${resolvePathRegExp(paths.componentRoot)}[\\\\/]+[^\\\\/]+[\\\\/]+demo[\\\\/]+.+\\.md$`)
               ],
               use: [
                 {
