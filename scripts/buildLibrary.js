@@ -2,7 +2,7 @@
 const paths = require("../config/paths");
 const path = require("path");
 const { exists } = require("../utils/fs");
-const { spawn } = require("child_process");
+const { spawn, exec } = require("child_process");
 const chalk = require("chalk");
 const { targetRoot, toolRoot, targetPkg, libraryBuild } = paths;
 const { name } = require(targetPkg);
@@ -21,7 +21,25 @@ module.exports = async function() {
   }
   const gulpConfig = path.resolve(toolRoot, "Gulpfile.js");
   return new Promise((resolve, reject) => {
-    const gulp = spawn(gulpBin, ["-f", gulpConfig, "--cwd", targetRoot], {
+    exec(`${gulpBin} -f ${gulpConfig} --cwd ${targetRoot}`, err => {
+      if (err) {
+        console.log();
+        console.error(err);
+        console.log(`generate library [ ${chalk.greenBright(name)} ] failed!`);
+        reject();
+      } else {
+        console.log();
+        console.log(`generate library [ ${chalk.greenBright(name)} ] success!`);
+        console.log(
+          `The ${chalk.cyan(
+            path.relative(targetRoot, libraryBuild)
+          )} folder is ready to publish.`
+        );
+        resolve();
+      }
+    });
+
+    /*const gulp = spawn(gulpBin, ["-f", gulpConfig, "--cwd", targetRoot], {
       // stdio: "inherit"
       stdio: "ignore"
     });
@@ -39,6 +57,6 @@ module.exports = async function() {
       console.error(err);
       console.log(`generate library [ ${chalk.greenBright(name)} ] failed!`);
       reject();
-    });
+    });*/
   });
 };
