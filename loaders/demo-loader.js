@@ -5,8 +5,8 @@ const { writeFile } = require("../utils/fs");
 const { hasImportReact, string2hex } = require("../utils");
 const getMDT = require("../utils/MDT");
 const MDT = getMDT();
-const demoCodeRegExp = /^```.*[jt]sx.*\n([\s\S]*?)```$/im;
-const demoCssCodeRegExp = /^```(css|sass|scss|less).*\n([\s\S]*?)```$/im;
+const demoCodeRegExp = /^```.*[jt]sx.*[\n\r]*([\s\S]*?)```$/im;
+const demoCssCodeRegExp = /^```(css|sass|scss|less).*[\n\r]*([\s\S]*?)```$/im;
 const defaultDemoCode = "export default () => null;";
 
 async function demoLoader(modulePath, source, config) {
